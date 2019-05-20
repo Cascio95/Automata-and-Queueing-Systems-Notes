@@ -1,0 +1,2 @@
+# AppuntiAQS
+Appunti Paoletti
