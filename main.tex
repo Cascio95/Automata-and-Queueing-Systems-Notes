@@ -869,12 +869,285 @@ $$
 Which means that the result is consistent with the soultion found by solving the Cauchy problem.
 \hspace{373pt}$\blacksquare$
 \end{enumerate}
-\emph{It's important to keep in mind that $Q$ has, as a property $(\star)$, that the sum of all the elements in a row is zero, for every row. This implies that one
-\footnote[2]{Only one eigenvalue is zero, in fact the property ($\star$) implies the linear dependency of one of the columns, so $rank(Q)=dim(Q)-1$. Since the $\#$ of eigenvalues in zero is equal to $dim(Q)-rank(Q)$, in this case there's $1$. } 
-of its eigenvalues ($\lambda$) is equal to $0$.}
+
+\newpage
+\subsection{The Q Matrix}
+
+From the previous proof, it's hard to obtain any direct information about $Q$, so this section will be dedicated to the properties of the $Q$ matrix. To start with, this matrix is called `\emph{Transition Rate Matrix}':
+$$
+Q=\left[
+\begin{matrix}
+q_{1,1} & q_{1,2} &  \cdots \cr
+q_{2,1} & q_{2,2} &  \cdots \cr
+\vdots & \vdots &  \ddots
+\end{matrix}
+\right]
+$$
+where the generic element $q_{i,j}$ is called transition rate. Since the need of defining $Q$ came from the compuation of the derivative of the matrix $H$, the properties of $H$ have been used to define the ones of $Q$. Let's start from the property of $H$ about the sum along any row being always $1$. Said $\textrm{\underline{\textbf{1}}}$ 
+the vector $\left(1,1,1,\dots,1\right)^T$:
+$$
+H(s)\cdot \textrm{\underline{\textbf{1}}} = \textrm{\underline{\textbf{1}}}
+\hspace{15pt}
+\overset{\textrm{taking the derivative}}{\underset{\textrm{of both the sides}}{\Rightarrow}}
+\hspace{15pt}
+\underbrace{\frac{d\left(H(s)\right)}{ds}}_{H(s)Q}\textrm{\underline{\textbf{1}}}
+\hspace{5pt}+\hspace{5pt}
+\underbrace{\frac{d\textrm{\underline{\textbf{1}}}}{ds}}_{
+=\hspace{2pt}O}H(s)
+\hspace{5pt}=\hspace{5pt}
+\underbrace{\frac{d\textrm{\underline{\textbf{1}}}}{ds}}_{=\hspace{2pt}O}
+\hspace{5pt}\Rightarrow
+$$
+$$
+\Rightarrow\hspace{5pt}
+H(s)Q\cdot \textrm{\underline{\textbf{1}}}\hspace{5pt}=\hspace{5pt}O
+\hspace{15pt}
+\overset{s\rightarrow 0}{\underset{H(0)\hspace{2pt}=\hspace{2pt}I}{\Rightarrow}}
+\hspace{15pt}
+Q\cdot \textrm{\underline{\textbf{1}}}\hspace{5pt}=\hspace{5pt}O
+$$
+
+\bigskip
+\noindent
+Where $O$ is the vector $\left(0,0,0,\dots,0\right)$. From this final result it's clear that:
+
+\bigskip\noindent
+\underline{\emph{The sum along every row of $Q$ is always $0$.}} \hspace{232pt} ($\star$)
+
+\bigskip\noindent
+This property has an important implication: 
+\emph{One of the eigenvalues of $Q$ it's always $0$}, since summing to one of the columns of $Q$ all the other columns will produce $O$. Therefore, the property ($\star$) implies the linear dependency of one of the columns and, since the number of zero eigenvalues is equal to the dimension of the kernel \footnote[2]{$dim(ker(Q))=dim(Q)-rank(Q)$}, one of the eigenvalues will always be $0$.
+
+\bigskip\noindent
+So, keeping in mind the property ($\star$), let's proceed with the definition of the generic coefficient $q_{i,j}$. At the moment, only the case in which $i\neq j$ will be considered. Let's start with the first order Taylor's representation of $H(ds)$, with $ds\rightarrow 0$:
+$$
+H(ds) \hspace{5pt} =\hspace{5pt}e^{Qds}
+\hspace{5pt}
+\overset{\textrm{Taylor}}{\underset{1^{st}\textrm{ order}}{=}}
+\hspace{5pt}
+I+Qds+o(ds)
+$$ 
+
+\bigskip\noindent
+So, reducing this last equation to the coefficients of the matrices involved, the result will be 
+(always under the condition $ds\rightarrow 0$):
+$$
+P_{i,j}(ds)=q_{i,j}ds+o(ds)
+$$
+Looking at the equation it's clear that \underline{\emph{all the $q_{i,j}$ with $i\neq j$ are non-negative}}, since $P_{i,j}(s)\geq 0$ (being a probability), $ds\geq 0$ (as it represents time, which cannot be negative) and $o(ds)$ goes to zero with $ds\rightarrow 0$. 
+\newpage
+\noindent
+The non-negativity of $q_{i,j}$ and the property ($\star$), impose that:
+
+\bigskip\noindent
+\underline{\emph{All the coefficients $q_{i,i}$ of the main diagonal of $Q$ must be non-positive}}, and in particular:
+$$
+q_{i,i}
+\hspace{5pt}=\hspace{5pt}-
+\sum_{j\neq i}{q_{i,j}}
+$$
+
+\paragraph{Physical Representation Of The Transition Rates}
+On a physical level the elements of the $Q$ matrix have two different meanings, depending on wether they are on the main diagonal or not:
+\begin{itemize}
+\item The elements on the main diagonal define the rate of the distribution of the state holding times (which are exponentially distributed) of the system and, in particular:
+$$
+E\left[V(i)\right]=\frac{1}{-q_{i,i}}
+$$
+\item All the other elements are used, together with the ones from the main diagonal, to compute the overall state transition probability, independent from the time, from the generic state $i$ to the generic state $j\neq i$ with the formula:
+$$
+p_{i,j}=-\frac{q_{i,j}}{q_{i,i}}
+$$
+\end{itemize}
+Let's start by computing the CDF of the state holding time of the generic state $i$, in order to provide proof for the statement done about elements in the main diagonal:
+$$
+F_i(t)\hspace{5pt}\triangleq\hspace{5pt}
+P\left( V(i)\leq t \right)
+$$
+And let's consider a small increment $dt$ of $t$ such that a state transition (only one) occurs in the time interval $[t,t+dt]$:
+$$
+F_i(t-dt)-F_i(t)\hspace{5pt}=\hspace{5pt}
+P\left( t < V(i) \leq t+dt\right)\hspace{5pt}=\hspace{5pt}
+P\left(V(i) \leq t+dt\hspace{4pt}|\hspace{4pt} V(i)>t \right)\cdot 
+\underbrace{P\left(V(i)>t\right)}_{1-F_i(t)}
+$$
+$$
+\overset{\textrm{in particular}}{\Rightarrow}\hspace{10pt}
+P\left(V(i) \leq t+dt\hspace{4pt}|\hspace{4pt} V(i)>t \right)
+\hspace{5pt}=\hspace{5pt}
+\sum_{j\neq i}{P_{i,j}(dt)}
+=
+$$
+$$
+\overset{\textrm{Taylor}}{\underset{1^{st}\textrm{ order}}{=}}
+\hspace{5pt}
+\sum_{j\neq i}{q_{i,j}dt+o(dt)}
+\hspace{10pt}
+\Rightarrow
+\hspace{10pt}
+F_i(t-dt)-F_i(t)
+\hspace{5pt}=\hspace{5pt}
+\left[
+\sum_{j\neq i}{q_{i,j}dt+o(dt)}
+\right]
+\left[
+1-F_i(t)
+\right]
+$$ 
+Dividing both the members of the last equation for $dt$ and computing the limit for $dt\rightarrow 0$
+$$
+\lim_{dt\rightarrow 0}{\frac{F_i(t-dt)-F_i(t)}{dt}}
+\hspace{5pt}=\hspace{5pt}
+\frac{d\left(F_i(t)\right)}{dt}
+\hspace{5pt}=\hspace{5pt}
+\lim_{dt\rightarrow 0}\frac{
+\left[
+\sum_{j\neq i}{q_{i,j}dt+o(dt)}
+\right]
+\left[
+1-F_i(t)
+\right]}{dt}
+$$ 
+$$
+\frac{d\left(F_i(t)\right)}{dt}
+\hspace{5pt}=\hspace{5pt}
+\lim_{dt\rightarrow 0}{
+\left[
+\sum_{j\neq i}{\frac{q_{i,j}dt}{dt}+\frac{o(dt)}{dt}}
+\right]
+\left[
+1-F_i(t)
+\right]}
+\hspace{5pt}=\hspace{5pt}
+\sum_{j\neq i}{q_{i,j}}
+\left[
+1-F_i(t)
+\right]
+\hspace{5pt}=\hspace{5pt}
+-q_{i,i}
+\left[
+1-F_i(t)
+\right]
+$$
+\newpage
+\noindent
+In order to find $F_i(t)$, let's solve the following Cauchy Problem:
+$$
+\begin{matrix}
+\begin{cases}
+\frac{d\left(F_i(t)\right)}{dt}=-q_{i,i}\left[1-F_i(t)\right]\\
+F_i(0)=0
+\end{cases}
+\end{matrix}
+$$
+Where $F_i(0)$ is the initial value of the generic state holding time $V(i)$. In order to compute the solution let's apply the following substitution:
+$$
+G_i(t)\hspace{5pt}\triangleq\hspace{5pt} 1-F_i(t)
+\hspace{10pt}
+\overset{\textrm{substituting }G_i(t) \textrm{ in}}
+{\underset{\textrm{both the equations}}{\Rightarrow}}
+\hspace{10pt}
+\begin{matrix}
+\begin{cases}
+\frac{d\left(G_i(t)\right)}{dt}=-\frac{d\left(F_i(t)\right)}{dt}=q_{i,i}\left[G_i(t)\right]\\
+G_i(0)=1
+\end{cases}
+\end{matrix}
+$$
+The solution to this cauchy problem is:
+$$
+G_i(t)=e^{q_{i,i}t}
+\Rightarrow
+F_i(t)=1-G_i(t)=1-e^{q_{i,i}t}
+$$
+This means that all the state hoding times in CTHMC are exponentially distributed and, moreover that the rate of the distribution is negative, in particular $-q_{i,i}$. Computing the expected value of the distribution will return the result of the first statement.
+\begin{flushright}
+$\blacksquare$
+\end{flushright}
+
+\bigskip\noindent
+Now the proof for the statement about the elements outside the main diagonal will be provided. Given two generic states $i$ and $j$, where $i\neq j$, and a generic time interval $\left[ t, t+dt\right]$, let's compute the following probability:
+\begin{equation}
+P\left( \textrm{a transition from }i\textrm{ to }j 
+\textrm{ occurs in the interval} \left[ t, t+dt\right]
+\hspace{4pt}|\hspace{4pt}
+X_k=i
+\right)
+\hspace{5pt}
+=
+\end{equation}
+$$
+=
+\hspace{5pt}
+P\left( V(i)>t\right)
+P_{i,j}(dt)
+\hspace{5pt}
+=
+\hspace{5pt}
+\left[1-P\left( V(i)\leq t\right)\right]
+\underbrace{P_{i,j}(dt)}_{
+\overset{\textrm{Taylor }1^{\textrm{st}}\textrm{ order}}
+{\overset{\Downarrow}{q_{i,j}dt+o(dt)}}}
+\hspace{5pt}
+\overset{dt\rightarrow 0}{=}
+\hspace{5pt}
+\left[1-\left(1-e^{q_{i,i} t}\right)\right]q_{i,j}dt
+\hspace{5pt}
+=
+$$
+\begin{large}
+$$
+\Rightarrow
+\hspace{5pt}
+P\left( V(i)>t\right)
+P_{i,j}(dt)
+\hspace{5pt}
+=
+\hspace{5pt}
+e^{q_{i,i} t}q_{i,j}dt
+$$
+\end{large}
+
+\noindent 
+Let's now introduce another probability, which is the generic state transition probability from $i$ to $j$, without taking into account the time:
+$$
+p_{i,j}=P(X_{k+1}=j \hspace{4pt}|\hspace{4pt} X_k=i)
+$$
+$p_{i,j}$ can be computed as sum of the probababilities like the ($4$) computed for all the intervals of the kind 
+$[t_n,t_n+dt_n]$, with $t_0=0$, $dt \rightarrow 0$, $n\in \mathbb{N}^+$:
+$$
+p_{i,j}
+\hspace{5pt}
+=
+\hspace{5pt}
+\int_0^{+\infty}{P\left( \textrm{a transition from }i\textrm{ to }j 
+\textrm{ occurs in the interval} \left[ t, t+dt\right]
+\hspace{4pt}|\hspace{4pt}
+X_k=i
+\right)} 
+\hspace{5pt}
+=
+$$
+$$
+=
+\hspace{5pt}
+\int_0^{+\infty}{
+e^{q_{i,i} t}q_{i,j}dt
+}
+\hspace{5pt}
+=
+\hspace{5pt}
+q_{i,j}\left[ \frac{e^{q_{i,i}t}}{q_{i,i}}\right]_0^{+\infty}
+\hspace{5pt}
+=
+\hspace{5pt}
+-\frac{q_{i,j}}{q_{i,i}}
+$$
+\begin{flushright}
+$\blacksquare$
+\end{flushright}
 \newpage
 \subsection{Steady State Analysis}
-Formally the matrix $Q$ is called `\emph{transition rate matrix}' and through this it's possible to determine, for each state, the probability that the system is exactly in that state at time $t$.
 Let's consider the `State Probability Vector' $\Pi(t)$, similar to the one in `\emph{Section $4$}':
 $$
 \Pi(t)\triangleq \left[
@@ -883,7 +1156,7 @@ $$
 \end{matrix}
 \right]
 $$ 
-The `State Probability' of the generic $j-th$ state will be obtained as:
+The `State Probability' of the generic $j-th$ state at time $t$ will be obtained as:
 
 $$
 \Pi_j\left(t\right)\hspace{5pt}=\hspace{5pt} P\left(x\left(t\right)=j\right)
@@ -901,7 +1174,7 @@ P\left(x\left(0\right)=i\right)
 $$
 
 \noindent
-Where $H_j(t)$ is the $j-th$ column of the matrix $H(t)$. This means that it's possible to compute all the state probabilities in one go by using:
+Where $H_j(t)$ is the $j-th$ column of the matrix $H(t)$. This means that, given a time instant $t$, it's possible to compute all the state probabilities in one go by using:
 \begin{equation}
 \Pi(t)\hspace{5pt}=\hspace{5pt}
 \Pi(0)\cdot H(t)\hspace{5pt}=\hspace{5pt}
@@ -1048,7 +1321,7 @@ The actual definition of the stationary probability vector brings some problems 
 \item Conditions for the independence from the initial state $\Pi_0$.
 \item Consistency of the probability vector, as the limit might exist but the probabilities might not sum up to $1$. 
 \end{itemize}
-A theorem (whose proof is not provided in these notes) states that for Continuous Time Homogeneous Markov Chains these problems, under precise conditions, can be all easily solved.
+A theorem (whose proof is not provided in these notes) states that for Continuous Time Homogeneous Markov Chains these problems, under precise conditions, can all be easily solved.
 
 \bigskip
 \noindent
@@ -1062,7 +1335,7 @@ $$
 $$
 exist, with $\Pi_i>0,\hspace{4pt}\forall i\in\mathcal{X}$ and they are all independent of $\Pi_0$. Moreover, the vector $\Pi$ can be computed by solving the system of linear equations:
 
-\begin{large}
+\begin{Large}
 $$
 \begin{matrix}
 \begin{cases}
@@ -1071,7 +1344,7 @@ $$
 \end{cases}
 \end{matrix}
 $$
-\end{large}
+\end{Large}
 \newpage
 \noindent
 From this last theorem, keeping in mind also the corollary $\#2.1$ of the previous paragraph, the following corollary can be obtained:
@@ -1095,8 +1368,6 @@ $$
 \end{matrix}
 $$
 Where $n$ is the cardinality of $\Pi$. This means that there is a redundant equation, which can be found in $\Pi Q=0$, due to the fact that $Q$ doesn't have full rank since it has an eigenvalue $\lambda =0$. So, the constraint $\sum_{i\in\mathcal{X}}{\Pi_i=1}$ ensures both the consistency of the probability vector and the existance of a unique solution.
-
-\noindent
 As a final clarification about the equations in the system, the set of equations given by $\Pi Q=0$ comes from the definition already treated for the transient state definition:
 $$
 \frac{d\Pi(t)}{dt}=\Pi(t)Q
@@ -1105,6 +1376,7 @@ Since for $t\rightarrow\infty$ the state probabilities are expected to converge 
 $$
 \frac{d\Pi(t)}{dt}=\Pi(t)Q \hspace{10pt} \overset{t\rightarrow\infty}{\Rightarrow}\hspace{10pt} \Pi Q=0
 $$
+\newpage
 \paragraph{Equivalent CTHMC for Stochastic Timed Automata With Poisson Clock Structure}
 
 \noindent A Stochastic Timed Automaton with Poisson Clock Structure $(\mathcal{E},\mathcal{X},\Gamma,P,p_0,F)$
@@ -1119,7 +1391,241 @@ $$
 p_{i,j}=\frac{q_{i,j}}{-q_{i,i}}
 $$
 \end{itemize}  
-Where $p_{i,j}$ is the generic element of the matrix $P_X$ of the Stochastic Timed Automaton with Poisson CLock Structure
-and $q_{i,j}$ is the generic element of the matrix $Q$ of the CTHMC. 
+So, in order to find the equivalent Markov Chain for a Stochastic Timed Automaton with Poisson Clock Structure it's enough to:
+\begin{itemize}
+\item Compute the expected value of the state holding time for every state, and compute the $q_{i,i}$ as:
+$$
+q_{i,i}=-\frac{1}{E[V(i)]}=-\sum_{e\in\Gamma(i)}{\lambda_e\left[1-P(i\hspace{4pt}|\hspace{4pt}i,e)\right]}
+$$
+\item Compute the $p_{i,j}$ according to the frequentist probability in order to find the corresponding $q_{i,j}$ as:
+$$
+q_{i,j}=-q_{i,i}p_{i,j}=\sum_{e\in\Gamma(i)}{\lambda_e P(i\hspace{4pt}|\hspace{4pt}i,e)}
+$$
+\end{itemize}
+Where $\lambda_e$ is the rate of the exponential distribution (since all the events lifetimes' distributions are exponential) of the event $e$.
 \newpage
+\section{Queueing Systems}
+Queueing systems are a really important kind of descrete events systems and they can be treated using any of the models defined up to now. When looking for a representation for a queueing system, a really general one could be the following:
+
+\begin{figure}[H]
+\begin{center}
+\begin{tikzpicture}
+% draw the rectangular shape with vertical lines
+\node[rectangle split, rectangle split parts=4,
+draw, rectangle split horizontal,text height=1cm,text depth=0.5cm,inner ysep=0pt] (Q) {Queue};
+% nodes
+\node[circle,minimum size=1pt] (h0) [right =30pt of Q] {};
+\node[draw,circle,minimum size=1.5cm] (s1) [label=above:{Server 1}] [above right =3cm of h0]{$S1$};
+\node[draw,circle,minimum size=1.5cm] (s2) [label=above:{Server 2}] [below right =3cm of h0]{$S2$};
+\node[circle,minimum size=1pt] (h1) [below right =3cm of s1] {};
+% the arrows and labels
+\draw[-] (Q.east) -- +(30pt,0) node[right] {};
+\draw[->] (h0.west) -- +(2.20cm,2.75cm) node[left] {};
+\draw[->] (h0.west) -- +(2.20cm,-2.75cm) node[left] {};
+\draw[-] (s2.east) -- +(2.20cm,2.80cm) node[left] {};
+\draw[-] (s1.east) -- +(2.20cm,-2.80cm) node[left] {};
+\draw[->] (h1.east) -- +(30pt,0) node[left] {};
+\end{tikzpicture}
+\caption{\small Generic queueing system representation.}
+\label{Picture 4}
+\end{center}
+\end{figure}
+In order to define a queueing system, some parameters must be specified:
+\begin{itemize}
+\item \textbf{Structural Parameters}:
+	\begin{itemize}
+	\item Number of servers.
+	\item Capacity of the queue.
+	\end{itemize}
+\item \textbf{Operating Policies}:
+	\begin{itemize}
+	\item Number of accepted customers and their `type' (so the kind of service they need).
+	\item Scheduling Policy of the queue (FIFO, Round-Robin, Shortest Processing Time, ...).
+	\item Conditions to accept new customers in the system.
+	\end{itemize}
+\item \textbf{Distributions of interarrival and sevice times}.
+\end{itemize}
+The choices made in the definition phase of a queueing system will affect its behaviour, especially the 
+`\textit{effective production rate}'. When producing any kind of product (or providing any kind of service), this is done by expecting a certain demand for that product (or service). The queueing system must be designed in order to meet the demand, in particular the effective production rate $\mu_{eff}$ must be greater than the `\textit{demand rate}' $d$:
+$$
+\mu_{eff}\geq d
+$$
+\newpage
+\paragraph{Kendall's Notation} can be used to describe queueing systems where there exists only one kind of customer. 
+The notation is composed by the following set of parameters:
+\begin{Large}
+$$
+A \hspace{3pt} / \hspace{3pt} B \hspace{3pt} / \hspace{3pt} m \hspace{3pt} / \hspace{3pt} K
+/ \hspace{3pt} n \hspace{3pt} / \hspace{3pt} D
+$$
+\end{Large}
+
+\noindent
+Where:
+\begin{itemize}
+\item \textbf{A}: is the distribution of the interarrival times.
+\item \textbf{B}: is the distribution of the service times.
+\end{itemize}
+The possible values for $A$ and $B$ are:
+$$
+\begin{matrix}
+M & : & \textrm{Exponential distribution (\underline{Memoryless})} \cr
+U & : & \textrm{Uniform distribution} \cr
+G & : & \textrm{Generic distribution} \cr
+D & : & \textrm{Deterministic distribution}
+\end{matrix}
+$$
+\begin{itemize}
+\item \textbf{m}: is the number of servers.
+\item \textbf{K}: is the capacity of the system (therefore the capacity of the queue is $K-m$).
+\item \textbf{n}: is the size of the population from which the customers come.
+\item \textbf{D}: is the scheduling policy.
+\end{itemize}
+When one or more parameters are not specified it means that the model of the queueing system operates without taking into account the information deriving form them. In fact, in these notes, only systems that can be represented through the notation
+$A/B/n/K$ are treated.
+
+\paragraph{Queueing systems in steady state}
+Before proceeding with the behaviour of queueing systems in steady state, it's necessary to provide some definitions. Let's consider the generic $k-th$ customer entering a queueing system. The time spent by the customer in the system doesn't necessarily correspond to the time that took the system to process the customer request. So, said $Z_k$ and $W_k$ respectively the `service time' and the `waiting time' of the $k-th$ customer in the system, the overall time spent in the system is called `system time' and it's defined as:
+$$
+S_k \triangleq W_k+Z_k
+$$ 
+Generally, the distribution of the system time it's different for every customer accepted in the system, but after a certain amount of customers accepted by the system, this might enter in a steady state. If a queueing system enters steady state, then the distributions of the system times will be the same for all the customers.
+\newpage
+\noindent
+\textbf{Definition:}
+
+\bigskip\noindent
+If there exists a random variable $S$ such that:
+$$
+P\left( S\leq t\right)
+\hspace{5pt}
+=
+\hspace{5pt}
+\lim_{k\rightarrow \infty}
+{P\left( S_k\leq t\right)}
+\hspace{15pt}
+,
+\hspace{15pt}
+\forall t
+$$
+Then the random variable $S$ describes the system time of a generic customer while the system is in steady state.
+
+\bigskip\noindent
+Using the same approach for $X(t)$, which is the number of customers in the system at time $t$:
+
+\bigskip
+\noindent
+\textbf{Definition:}
+
+\bigskip\noindent
+If there exists a random variable $X$ such that:
+$$
+P\left( X=i\right)
+\hspace{5pt}
+=
+\hspace{5pt}
+\lim_{t\rightarrow \infty}
+{P\left( X(t)\leq i\right)}
+\hspace{15pt}
+,
+\hspace{15pt}
+\forall i
+$$
+\noindent
+Then the random variable $X$ describes the number of customers in the system when this is in steady state. Moreover, always in steady state, since the number of customers in the system doesn't depend on the time anymore, then also its expected value $E\left[X(t)\right]$ doesn't:
+$$
+E\left[X(t)\right]
+\hspace{5pt}
+=
+\hspace{5pt}
+\sum_{i}
+{
+i \cdot P\left(X(t)=i\right)
+}
+\hspace{5pt}
+\overset{t\rightarrow \infty}{=}
+\hspace{5pt}
+\sum_{i}
+{
+i \cdot P\left(X=i\right)
+}
+$$
+From the rightmost result it comes out that $E\left[X(t)\right]=E\left[X\right]$.
+
+\bigskip\noindent
+In particular, from these definitions it's possible to define a necssary condition for the system to be in steady state. Said $\mu_{eff}$ the effective production rate and $\lambda_{eff}$ the effective arrival rate (rate of arrivals accepted in the system) at steady state the following condition must hold:
+$$
+\mu_{eff}\hspace{5pt}=\hspace{5pt}\lambda_{eff}
+$$
+This condition hold also for queueing networks, which are queueing systems composed by others queueing sub-systems. So, considering a system consisting of two stations in series, each of them composed by a machine preceded by a buffer, if the whole system reaches steady state the following conditions will hold:
+$$
+\mu_{eff,1}\hspace{5pt}=\hspace{5pt}\lambda_{eff,1}
+\hspace{10pt}
+,
+\hspace{10pt}
+\mu_{eff,2}\hspace{5pt}=\hspace{5pt}\lambda_{eff,2}
+$$
+When studying the steady state of a queueing system, an important parameter to take into account would be the `utilization' $U$, which is the fraction of time (over all the system activity time) in which the machine is actively working. If $U=1$ the machine it's always working, of course if $U=1$ for an observation time $t\rightarrow \infty$, then the machine is perfect. 
+
+\bigskip\noindent
+The utilization value is also used to obtain another parameter called \emph{throughput}, which is defined as the mean number of requests serviced during a time unit:
+$$
+throughput\hspace{5pt}=\hspace{5pt}U\cdot m\cdot \mu_{eff}
+$$
+In particular, on a single server system with $U=1$ the throughput is equal to $\mu_{eff}$.
+\newpage
+
+\paragraph{Little's Law}
+Let's consider a queueing network at steady state and a curve $\Sigma$, closed around any fraction of the network (also the whole network can be considered an acceptable fraction). Let's consider only the portion of network within $\Sigma$ and let's define:
+\begin{itemize}
+\item $\lambda_{\Sigma}$ as the arrival rate for the arrivals which enter the curve $\Sigma$ (if $\Sigma$ surrounds the whole network $\lambda_{\Sigma}=\lambda_{eff}$).
+\item $E[X_{\Sigma}]$ as the expected value of the number of customers within $\Sigma$ (if $\Sigma$ surrounds the whole network $E[X_{\Sigma}]=E[X]$).
+\item $E[S_{\Sigma}]$ as the expected value of the time spent by a customer in $\Sigma$ (if $\Sigma$ surrounds the whole network $E[S_{\Sigma}]=E[S]$).
+\end{itemize}
+Little's Law states that:
+
+\bigskip \noindent
+\begin{Large}
+$$
+E[X_{\Sigma}]\hspace{5pt}=\hspace{5pt}\lambda_{\Sigma}\cdot E[S_{\Sigma}]
+$$
+\end{Large}
+
+\bigskip \noindent
+This law comes particularly handy since $E[S_{\Sigma}]$ it's often hard to compute directly, while instead it's easy to do it for the other two parameters.
+\paragraph{PASTA Property}
+It's another propety for queueing systems. Let's define:
+\begin{itemize}
+\item $A(t)$ as the occurrence of an arrival in the system at the time $t$.
+\item $\alpha_n(t)$ as the posterior probability that the state at time $t$ is $n$, knowing that at time $t$ an arrival occurs:
+$$
+\alpha_n(t)
+\hspace{5pt}=\hspace{5pt}
+P(X(t)=n \hspace{4pt} | \hspace{4pt} A(t))
+$$
+\item $\Pi_n(t)$ as the prior probability that the state at time $t$ is $n$:
+$$
+\Pi_n(t)
+\hspace{5pt}=\hspace{5pt}
+P(X(t)=n)
+$$
+\end{itemize}
+Generally, $\alpha_n(t)\neq \Pi_n(t)$, but PASTA property states that:
+
+\bigskip\noindent
+\emph{If the arrivals are generated by a Poisson process and the lifetimes for arrivals and service terminations are independent then:}
+$$
+\alpha_n(t) \hspace{5pt}=\hspace{5pt} \Pi_n(t) \hspace{10pt},\hspace{10pt} \forall t,n
+$$
+Which means that it's possible to obtain, under these conditions, the prior probability simply by computing the posterior probability. Moreover, since the result of PASTA property holds $\forall t$, it can also be used when the system is in steady state.
+\newpage
+
+\paragraph{Ergodicity}
+It's a property of stochastic processes $X_h(t)$ in which the ensamble average (average over $h$) and the time average are the same. In particular, when the system is in steady state, its stochastic behaviour won't depend on time anymore and therefore it can be considered ergodic. So, the only condition for ergodicity is that the system must be able to reach steady state.
+
+\bigskip \noindent
+The reason why ergodicity is such an interesting property is that it makes possible to compute, when the system is in steady state, the fraction of time spent in a certain state as the prior probability of being in that state and viceversa.
+
+
+
 \end{document}
