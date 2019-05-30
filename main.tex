@@ -1,6 +1,8 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[12pt,a4paper]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
 \usepackage{mathtools}
 \usepackage{amssymb,amsmath}
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -28,59 +30,75 @@ A system with time-driven dynamics is a kind of system in which, even though eve
 \noindent
 A system with event-driven dynamics is a kind of system whose state variates only with the occurrence of certain events and it is constant in the time between an event and the next one. This produces a piecewise constant function in the time.
 
+\paragraph{Discrete Event System} Dynamical system with discrete states and event-driven dynamics.
 
-\paragraph{Discrete Event System} Dynamical system with discrete states and event-driven dynamics. 
-\paragraph{State Automaton} It’s a model through which Discrete Event Systems can be represented and it’s identified as a $5-$tuple $(\mathcal{E},\mathcal{X},\Gamma,f,x_0)$ where:
+\paragraph{State Automaton} It’s a model through which Discrete Event Systems can be represented and it’s identified as a 5-tuple $(\mathcal{E},\mathcal{X},\Gamma,f,x_0)$ where:
 \begin{itemize}
 \item $\mathcal{E}$ is a discrete set of events.
 \item $\mathcal{X}$ is a discrete set of states.
 \item $\Gamma$ is a function taking values $\mathcal{X}\rightarrow 2^\mathcal{E}$, where $2^\mathcal{E}$ is the `power set’ of the set $\mathcal{E}$ and it represents the set of all the possible subsets of $\mathcal{E}$:
 $$
-\text{e.g. : }\mathcal{E}={a,b} \Rightarrow 2^\mathcal{E}=\{\emptyset, (a), (b), (a,b,)\} \text{\hspace{1 cm};\hspace{1 cm}} dim(2^\mathcal{E}) = 2^{dim(\mathcal{E})}
+\text{e.g. : }\mathcal{E}={a,b} \Rightarrow 2^\mathcal{E}=\{\emptyset, \{a\}, \{b\}, \{a,b\}\} \text{\hspace{1 cm};\hspace{1 cm}} dim(2^\mathcal{E}) = 2^{dim(\mathcal{E})}
 $$
-$\Gamma(x)$ represents the set of the events that are possible in the state $x$. 
+$\Gamma(x)$ represents the set of events that are possible in the state $x$. 
 \item $f$ is a function taking values in $\mathcal{X}\times\mathcal{E}\rightarrow\mathcal{X}$ and defines the state transitions, such that $x' = f(x,e)$ is the next state when event $e\in\Gamma(x)$ occurs in the current state $x\in\mathcal{X}$.
 \item $x_0\in\mathcal{X}$ is the initial state.
 \end{itemize}
-It’s fundamental to not to confuse the model with the actual system since the models always introduce a certain level of approximation with respect to the reality. 
-\newpage
-\paragraph{The concept of feasibility} When thinking about a real system there are many events that are possible and many others that aren’t. When modelling a system, the events that are extremely improbable (at a level that they can be considered impossible) must be excluded, but there are some events that are state-related that are actually impossible. For instance, a machine which is not working cannot complete a job. A sequence of events $(e_1,e_2,\dots,e_n)$ is feasible (could occur in reality) only if all the events of the sequence occur in states in which they are possible:
-$$
-(e_1,e_2,\dots,e_n ) \hspace{0.5cm} \text{is feasible if: } e_k \in \Gamma (x_{k-1}) \hspace{0.5cm} , \hspace{0.5cm} k\in (1,2,\dots,n) \hspace{0.5cm} , \hspace{0.5cm} x_k=f(x_{k-1},e_k )
-$$
-The problem is that the unfeasible sequences aren’t always obvious, which means that to find some of them it’s either necessary to have a deep knowledge of the system or to run a big amount of simulations of the model (assuming that it’s realistic enough) in order to find sequences causing errors.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{IMG/stateAut.png}
+	\caption{State automaton block diagram.}
+	\label{fig:stateAut}
+\end{figure}
+Don't confuse the model with the actual system because models introduce a certain degree of approximation with respect to the reality.
 
-\paragraph{State Automaton with outputs} It’s a model through which Discrete Event Systems can be represented and it’s identified as a $5-$tuple $(\mathcal{E},\mathcal{X},\Gamma,f,x_0,\mathcal{Y},g)$ where:
+\paragraph{The concept of feasibility} When thinking about a real system there are many events that are possible and many others that aren’t. When modelling a system, the events that are extremely improbable (at a level that they can be considered impossible) must be excluded, but there are some events that are state-related that are actually impossible. For instance, a machine which is not working cannot complete a job. A sequence of events $(e_1,e_2,\dots,e_n)$ is \textbf{feasible} (could occur in reality) only if all the events of the sequence occur in states in which they are possible. In other words, the following conditions must hold:
+\begin{align*}
+e_k &\in \Gamma (x_{k-1}), \quad k = 1,2,\dots,n \\ 
+x_k &= f(x_{k-1},e_k)
+\end{align*}
+% TODO Sostituire con align?
+%$$
+%(e_1,e_2,\dots,e_n ) \hspace{0.5cm} \text{is %feasible if: } e_k \in \Gamma (x_{k-1}) %\hspace{0.5cm} , \hspace{0.5cm} k\in (1,2,\dots,n) %\hspace{0.5cm} , \hspace{0.5cm} x_k=f(x_{k-1},e_k )
+%$$
+Unfeasible sequences aren’t always obvious, which means that to find some of them it’s either necessary to have a deep knowledge of the system or to run a huge amount of model simulations (assuming that it’s realistic enough) in order to detect sequences causing errors.
+
+\paragraph{State Automaton with outputs} It’s a model through which Discrete Event Systems can be represented and it’s identified as a 7-tuple $(\mathcal{E},\mathcal{X},\Gamma,f,x_0,\mathcal{Y},g)$ where:
 \begin{itemize}
 \item $(\mathcal{E},\mathcal{X},\Gamma,f,x_0)$ is a state automaton.
 \item $\mathcal{Y}$ is a discrete set of outputs.
-\item $g$ is a function taking values in $\mathcal{X}\rightarrow\mathcal{Y}$ and defines the output, such that $y=g(x)$, where $x\in\mathcal{X}$ is the current state and $y\in\mathcal{Y}$ is the current output.
+\item $g$ is a function taking values in $\mathcal{X}\rightarrow\mathcal{Y}$, such that $y=g(x)$ where $y\in\mathcal{Y}$ is the output corresponding to state $x\in\mathcal{X}$.
 \end{itemize}
 
 \section{Timed Automata}
-\paragraph{Concept of time in DES} In a real system, when an event occurs, it’s also possible to know the time in which this happens. When trying to introduce the concept of time in a State Automaton model, it’s important to keep a concept in mind:
+\paragraph{Concept of time in DES} In a real system, when an event occurs, it’s also possible to know the time instant when this happens. When trying to introduce the concept of time in a State Automaton model, it’s important to remember:
 \begin{itemize}
-\item Time cannot be given as an input to the state automaton, since the inputs are independent of the system while the time instants in which events occur depend on the system itself. 
+\item Time cannot be given as an input to the state automaton, since the inputs are independent of the system while time instants in which events occur depend on the system itself. 
 \end{itemize}
-This can be demonstrated by considering the execution of the jobs on certain elements by a given machine as regulated by two different disciplines (while having the time as input): First-In-First-Out (FIFO) and Round-Robin (RR). The FIFO discipline is self-explanatory. The RR is based on the concept of `time slice’, which is the maximum time the machine dedicates to a certain element that needs processing before switching to the next one. In the case in which the time needed to complete the job on the first element is higher than the time slice, the partially processed element will be put back in the queue in last position.
+This can be demonstrated by considering the execution of jobs on certain elements by a given machine as regulated by two different disciplines (while having the time as input): First-In-First-Out (FIFO) and Round-Robin (RR). The FIFO discipline is self-explanatory. The RR is based on the concept of `time slice’, which is the maximum time the machine dedicates to a certain element that needs processing before switching to the next one. In the case in which the time needed to complete the job on the first element is higher than the time slice, the partially processed element will be put back in the queue in last position.
 Both the disciplines allow the machine to complete the job on all the elements, but, even if their times of arrival are the same, the times in which they are accepted in the system and the ones in which the processing on every single element terminates are different. This means that the time instants in which the events occur cannot be given as input to the system, as they depend on it.
-\newpage
+
 \paragraph{Timed Automaton}
-A solution to the problem presented in the past paragraph is to use as inputs, instead of the time instants, the duration of processes, at the end of which the events occur. This way, when the system enters a state x in which a given event e is possible, in the model it’s possible to start a process of a set duration. This process represents the `lifetime of the event’ and when the lifetime finishes, the event will occur. Finally, the time in which the event e occurs is obtained as sum of the time instants in which the system enters the state x and the lifetime of the event e.
-This allows us to define the timed automaton as a $6-$tuple $(\mathcal{E},\mathcal{X},\Gamma,f,x_0,V)$, where: 
+A solution to the problem presented in the past paragraph is to use as inputs, instead of the time instants, the duration of processes, at the end of which the events occur. This way, when the system enters a state $x$ in which a given event $e$ is possible, in the model it’s possible to start a process of a set duration. This process represents the \textit{event's lifetime} and when the lifetime depletes, the event occurs. Finally, the time instant when $e$ occurs is obtained as sum of the time instants in which the system enters the state x and the lifetime of the event e.
+This allows us to define the \textbf{timed automaton} as a $6-$tuple $(\mathcal{E},\mathcal{X},\Gamma,f,x_0,V)$, where: 
 \begin{itemize}
 \item $(\mathcal{E},\mathcal{X},\Gamma,f,x_0)$ is a state automaton. 
-\item $V$ is the `clock structure’ which is an array of `clock sequences’ of the various events:
+\item $V$ is the \textit{clock structure} which is an array of `clock sequences’ of the various events:
 $$
-V=\{V_e ;e\in\mathcal{E}\}\hspace{0.5cm};\hspace{0.5cm}V_e=\{V_{e1}, V_{e2}, V_{e3},\dots\}
+V=\{V_e : e\in\mathcal{E}\}, \quad V_e=\{v_{e1}, v_{e2}, v_{e3},\dots\}
 $$
 \end{itemize}	
 \noindent
-Where $V_e$ is the clock sequence of the event e and $V_{ei}$ is the lifetime of the $i-$th occurrence of the event $e$. It’s important to keep in mind that the lifetimes must be always positive for the model to be representative of a real system.
+Where $V_e$ is the clock sequence of event $e$ and $v_{ei}$ is the lifetime of the $i-$th occurrence of event $e$. Please note that lifetimes must be $v_{ei} \ge 0$ for the model to be representative of a real system.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{IMG/timedAut.png}
+	\caption{Timed automaton block diagram.}
+	\label{fig:timedAut}
+\end{figure}
 
 \paragraph{Residual Times} According to the definition of a Timed Automaton when entering a state in which an event is possible a process with a certain lifetime starts. Let’s consider the situation in which there are two lifetimes, related to two events $e_1$ and $e_2$, where $V_{e1}<V_{e2}$ that start when the system enters the state $x_{k-1}$. The event $e_1$ will occur first and the system will enter state $x_k$. If event $e_2$ is still possible in state $x_k$ then, instead of starting a new process with its lifetime, the `residual lifetime’ $y_{e2}=V_{e2}-V_{e1}$ is employed. If event $e_2$ is not possible there are two options: either dropping the current lifetime in order to start a new process when the event becomes possible again or keeping the residual lifetime in order to reuse it when the system enters a state in which $e_2$ is possible again. The choice between these options, in the model, depends on the behaviour of the system.
-
-\newpage 
 
 \paragraph{Notation for Timed Automata}
 The `score’ of an event $e$ at the time $t$, denoted $n_e (t)$, is the number of lifetimes of the event e completed in the interval $[t_0,t]$. From now on the following notation will be used:
