@@ -5,6 +5,7 @@
 \usepackage{microtype}
 \usepackage{mathtools}
 \usepackage{amssymb,amsmath}
+\usepackage{relsize}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \usepackage{tikz}
@@ -89,7 +90,7 @@ V=\{V_e : e\in\mathcal{E}\}, \quad V_e=\{v_{e1}, v_{e2}, v_{e3},\dots\}
 $$
 \end{itemize}	
 \noindent
-Where $V_e$ is the clock sequence of event $e$ and $v_{ei}$ is the lifetime of the $i-$th occurrence of event $e$. Please note that lifetimes must be $v_{ei} \ge 0$ for the model to be representative of a real system.
+Where $V_e$ is the clock sequence of event $e$ and $v_{ei}$ is the lifetime of the $i$-th occurrence of event $e$. Please note that lifetimes must be $v_{ei} \ge 0$ for the model to be representative of a real system.
 
 \begin{figure}[H]
 	\centering
@@ -106,11 +107,11 @@ The `score’ of an event $e$ at the time $t$, denoted $n_e (t)$, is the number 
 \item With respect to event occurrences:
 	\begin{itemize}
 	\item $k$ is the event index $(k=1,2,3,\dots)$.
-	\item $e_k$ is the $k-th$ event.
+	\item $e_k$ is the $k$-th event.
 	\item $x_k$ is the state reached after $e_k$ occurs.
 	\item $t_k$ is the time when the $e_k$ occurs.
-	\item $n_{e,k}$ is score of the event $e$ after the $k-th$ event.
-	\item $y_{e,k}$ is the residual lifetime of $e$ after the $k-th$ event.
+	\item $n_{e,k}$ is score of the event $e$ after the $k$-th event.
+	\item $y_{e,k}$ is the residual lifetime of $e$ after the $k$-th event.
 	\end{itemize} 
 \item With respect to time:
 	\begin{itemize}
@@ -119,22 +120,20 @@ The `score’ of an event $e$ at the time $t$, denoted $n_e (t)$, is the number 
 	\item $x(t)$ is the state of the system at time $t$.
 	\end{itemize} 
 \end{itemize}
-\paragraph{General algorithm for event timing} Before explaining the algorithm it’s important to know that it’s possible to use it only when the following assumptions stand:
+\paragraph{General algorithm for event timing} The algorithm works only when the following assumptions hold:
 \begin{enumerate}
-\item When an event $e$ doesn’t occur and it’s not possible in the next state, its residual lifetime is ignored, and a new lifetime is taken from the corresponding clock sequence.
+\item When an event $e$ doesn’t occur and it’s not possible in the next state, its residual lifetime is ignored and the next time event $e$ becomes possible a new total lifetime is taken from the corresponding clock sequence.
 \item When event $e$ occurs, the next time it becomes possible a new total lifetime is taken from the corresponding clock sequence.
-\item If the event $e$ doesn’t occur and it’s still possible in the next state, then its residual lifetime is employed.
+\item If the event $e$ doesn’t occur and it’s still possible in the next state, then its residual lifetime is used.
 \end{enumerate}
- 
-\newpage
 \noindent
 Under these assumptions, the algorithm is composed by the following steps:
 \begin{enumerate}
 \setcounter{enumi}{-1}
-\item \textbf{Initialization: }	for all the events $e\in\mathcal{E}$, if $e\in\Gamma(x_0)$ we consider $y_{e,0}=V_{e1}$ and $n_{e,0}=1$. Otherwise, if $e\notin\Gamma(x_0)$, $y_{e,0}$ is undefined and $n_{e,0}=0$.
-\item \textbf{Selection of the next event: } the next event is the one with the smallest residual lifetime:
+\item \textbf{Initialization:} for all the events $e\in\mathcal{E}$, if $e\in\Gamma(x_0)$ we consider $y_{e,0}=v_{e,1}$ and $n_{e,0}=1$. If $e\notin\Gamma(x_0)$, $y_{e,0}$ is undefined and $n_{e,0}=0$.
+\item \textbf{Selection of the next event:} the next event is the one with the smallest residual lifetime.
 $$
-e_k = \argmin\limits_{e\in\Gamma(x_{k-1})} (y_{e,k-1}) = \text{arg} (y_{k-1}^*)
+e_k = \argmin\limits_{\mathlarger{e\in\Gamma(x_{k-1})}} (y_{e,k-1}) = \text{arg} (y_{k-1}^*)
 $$
 \item \textbf{Determination of the time instant of the next event}
 $$
@@ -144,19 +143,21 @@ $$
 $$
 x_{k}=f(x_{k-1},e_{k})
 $$
-\item \textbf{Score update}
+\item \textbf{Score update:}
+for all the events $e\in\mathcal{E}$.
 $$
 n_{e,k}=
 \begin{cases}
-n_{e,k} = n_{e,k-1} & \text{if a residual lifetime is used} \\
-n_{e,k} = n_{e,k-1}+1 & \text{if a new total lifetime is used} \\
+n_{e,k} = n_{e,k-1}+1 & \text{if a new total lifetime is used (ass. 1 and 2)} \\
+n_{e,k} = n_{e,k-1} & \text{if the residual lifetime is used (ass. 3)}
 \end{cases}
 $$
-\item \textbf{Update of the residual lifetimes}
+\item \textbf{Update of the residual lifetimes:}
+for all the events $e\in\mathcal{E}$.
 $$
 y_{e,k}=
 \begin{cases}
-V_{e,n_{e,k}} & \text{if } \left[\left(e\notin\Gamma(x_{k-1})\wedge e\in\Gamma(x_{k})\right)\vee\left(e=e_{k} \wedge e\in \Gamma(x_{k})\right)\right] \\
+v_{e,n_{e,k}} & \text{if } \left[\left(e\notin\Gamma(x_{k-1})\wedge e\in\Gamma(x_{k})\right)\vee\left(e=e_{k} \wedge e\in \Gamma(x_{k})\right)\right] \\
 y_{e,k-1}-y_{k-1}^{*} & \text{if } \left[e\in\Gamma(x_{k-1})\wedge e\neq e_{k} \wedge e\in\Gamma(x_{k}) \right] \\
 \end{cases}
 $$
@@ -524,14 +525,14 @@ $$
 
 \bigskip
 \noindent
-So it's possible to define the probability that the $k+1-th$ state is $j$ as:
+So it's possible to define the probability that the $k+1$-th state is $j$ as:
 $$
 P\left(X_{k+1}=j\right)=\sum_{i\in \mathcal{X}}{
 \underbrace{P\left(X_{k+1}=j \hspace{4pt}|\hspace{4pt} X_k=i\right)}_{(i,j)-th\text{ entry of }P_X}
 \underbrace{P\left(X_k=1\right)}_{i-th\text{ entry of }\Pi_X(k)}
 }
 $$ 
-which will be the $j-th$ entry of the vector $\Pi_X(k+1)$. 
+which will be the $j$-th entry of the vector $\Pi_X(k+1)$. 
 \newpage
 \noindent
 So assuming that $\Pi_X(0)$ is known:
@@ -698,12 +699,12 @@ The stochastic processes are actually classified depending on the nature of $T$:
 and it's also called \emph{`chain'}.
 \item \textbf{if $T$ is continuous} the process is a \emph{`continuous time stochastic process'}.
 \end{itemize}
-To characterise stochastic processes it's necessary to provide joint distributions of all the possible $n-tuples$ of the random variables which compose the process. Since this is really hard to realise, in these notes the stochastic processes will be used
+To characterise stochastic processes it's necessary to provide joint distributions of all the possible $n-$tuples of the random variables which compose the process. Since this is really hard to realise, in these notes the stochastic processes will be used
 only when the independence between the random variables holds, therefore with stochastic timed automata with Poisson clock structure. Finally, the independence concept in stochastic processes is defined as follows:
 
 \bigskip
 \noindent 
-Given $X(t_1), X(t_2),\dots, X(t_n)$ $n-tuples$ of random variables with $t_1<t_2<\dots<t_n \in T$ and $n=2,3,4,\dots$ the process is said \emph{`independent'} only if all the $n-tuples$ are independent. 
+Given $X(t_1), X(t_2),\dots, X(t_n)$ $n-$tuples of random variables with $t_1<t_2<\dots<t_n \in T$ and $n=2,3,4,\dots$ the process is said \emph{`independent'} only if all the $n-$tuples are independent. 
 
 \bigskip
 \noindent 
@@ -1492,7 +1493,7 @@ When one or more parameters are not specified it means that the model of the que
 $A/B/n/K$ are treated.
 
 \paragraph{Queueing systems in steady state}
-Before proceeding with the behaviour of queueing systems in steady state, it's necessary to provide some definitions. Let's consider the generic $k-th$ customer entering a queueing system. The time spent by the customer in the system doesn't necessarily correspond to the time that took the system to process the customer request. So, said $Z_k$ and $W_k$ respectively the `service time' and the `waiting time' of the $k-th$ customer in the system, the overall time spent in the system is called `system time' and it's defined as:
+Before proceeding with the behaviour of queueing systems in steady state, it's necessary to provide some definitions. Let's consider the generic $k$-th customer entering a queueing system. The time spent by the customer in the system doesn't necessarily correspond to the time that took the system to process the customer request. So, said $Z_k$ and $W_k$ respectively the `service time' and the `waiting time' of the $k-th$ customer in the system, the overall time spent in the system is called `system time' and it's defined as:
 $$
 S_k \triangleq W_k+Z_k
 $$ 
