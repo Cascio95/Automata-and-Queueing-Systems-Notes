@@ -86,11 +86,11 @@ This allows us to define the \textbf{timed automaton} as a $6-$tuple $(\mathcal{
 \item $(\mathcal{E},\mathcal{X},\Gamma,f,x_0)$ is a state automaton. 
 \item $V$ is the \textit{clock structure} which is an array of `clock sequences’ of the various events:
 $$
-V=\{V_e : e\in\mathcal{E}\}, \quad V_e=\{v_{e1}, v_{e2}, v_{e3},\dots\}
+V=\{V_e : e\in\mathcal{E}\}, \quad V_e=\{v_{e,1}, v_{e,2}, v_{e,3},\dots\}
 $$
 \end{itemize}	
 \noindent
-Where $V_e$ is the clock sequence of event $e$ and $v_{ei}$ is the lifetime of the $i$-th occurrence of event $e$. Please note that lifetimes must be $v_{ei} \ge 0$ for the model to be representative of a real system.
+Where $V_e$ is the clock sequence of event $e$ and $v_{e,i}$ is the lifetime of the $i$-th occurrence of event $e$. Please note that lifetimes must be $v_{e,i} \ge 0$ for the model to be representative of a real system.
 
 \begin{figure}[H]
 	\centering
@@ -148,8 +148,8 @@ for all the events $e\in\mathcal{E}$.
 $$
 n_{e,k}=
 \begin{cases}
-n_{e,k} = n_{e,k-1}+1 & \text{if a new total lifetime is used (ass. 1 and 2)} \\
-n_{e,k} = n_{e,k-1} & \text{if the residual lifetime is used (ass. 3)}
+n_{e,k-1}+1 & \text{if a new total lifetime is used (ass. 1 and 2)} \\
+n_{e,k-1} & \text{if the residual lifetime is used (ass. 3)}
 \end{cases}
 $$
 \item \textbf{Update of the residual lifetimes:}
@@ -157,16 +157,16 @@ for all the events $e\in\mathcal{E}$.
 $$
 y_{e,k}=
 \begin{cases}
-v_{e,n_{e,k}} & \text{if } \left[\left(e\notin\Gamma(x_{k-1})\wedge e\in\Gamma(x_{k})\right)\vee\left(e=e_{k} \wedge e\in \Gamma(x_{k})\right)\right] \\
+v_{e,n_{e,k}} & \text{if } \left[\left(e\in\Gamma(x_{k-1})\wedge e\notin\Gamma(x_{k})\right)\vee\left(e=e_{k} \wedge e\in \Gamma(x_{k})\right)\right] \\
 y_{e,k-1}-y_{k-1}^{*} & \text{if } \left[e\in\Gamma(x_{k-1})\wedge e\neq e_{k} \wedge e\in\Gamma(x_{k}) \right] \\
 \end{cases}
 $$
-\item \textbf{Assign value $k+1$ to variable $k$ and restart from step $1$.}
+\item \textbf{Assign value $k+1$ to variable $k$ and go to step 1.}
 \end{enumerate}
-\newpage
-\section{Stochastic State Automata}
+
+\section{Stochastic Timed Automata}
 \paragraph{Concept of ubiquitous uncertainty}
-Often there are some levels of uncertainty in the systems that need to be also inserted in the models. An example would be the one of a system with two machines which operate in parallel: how do we know, if they are both available, which one will start working when a piece arrives? Here’s a list of the elements in the Timed automaton which are subject to uncertainty:
+In real systems there might be a degree of uncertainty which must be accounted for in the system's models. Suppose you have two machines which operate in parallel: how can you determine if they are both available, which one will start working when a piece arrives? Here’s a list of the elements in the Timed automaton which are subject to uncertainty:
 \begin{itemize}
 \item $f$: The example just described is a case of uncertainty in the state transition function.
 \item $x_0$: Let’s consider a shop, if it opens at a given time $t_0$ and there are some people waiting for it to open, how long is the queue (state) at $t_0$? 
