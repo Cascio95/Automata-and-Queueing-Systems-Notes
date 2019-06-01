@@ -359,26 +359,37 @@ P(X\leq Y)= \frac{\lambda}{\lambda + \mu}
 \end{equation}
 will be used a lot, so it's important to keep it in mind.
 \section{Stochastic Timed Automata With Poisson Clock Structure}
-\paragraph{Poisson Counting Processes} It's a process which counts the occurrences of an event which is always possible. In particular, in Poisson counting processes the `interarrival times' $T_i$ between any two occurrences of the same event are \textit{i.i.d.} and have the same exponential distribution:
+\paragraph{Poisson Counting Processes} It's a process which counts the occurrences of an event which is always possible. In particular, the `interarrival times' $T_i$ between any two occurrences of the same event are \textit{i.i.d.} and their distribution is:
 $$
-T_i\sim Exp\left(\frac{1}{\lambda}\right),\hspace{20pt}t\geq 0,\hspace{20pt}\forall i
+T_i\sim Exp\left(\frac{1}{\lambda}\right), \quad \lambda > 0
 $$
 \noindent
-A Poisson counting process is defined as a discrete random variable $N_e(t,t+s)$ representing the number of occurrences of the event $e$ in the interval $\left( t,t+s\right]$. In particular, given that the interarrival times are exponentially distributed, the PMF of the Poisson counting process is:
-
-\begin{equation}
-P\left(N_e(t,t+s)\right)\hspace{15pt}\underset{\textrm{exponential distribution}}
-{\overset{\textrm{memoryless property of}}{=}}\hspace{15pt}P\left(N_e(s)\right)\hspace{10pt}=
-\hspace{10pt}\frac{(\lambda s)^n}{n!}e^{-\lambda s}
-\end{equation}
-
+A Poisson counting process is defined as a discrete random variable $N_e(t,t+s)$ (it is a random variable because the interarrival times are, indeed, random variables) representing the number of occurrences of the event $e$ over the interval $\left( t,t+s\right]$. Given that the interarrival times are exponentially distributed, the probability mass function (pmf) of the Poisson counting process is:
+\begin{equation*}
+\begin{split}
+P\left(N_e(t,t+s)=n\right)&, \qquad n = 0,1,2,\dots \\
+P\left(N_e(t,t+s)=n\right)& = \frac{(\lambda s)^n}{n!}e^{-\lambda s}
+\end{split}
+\end{equation*}
+Quite evidently, the pmf depends only on $s$, not $t$, so:
+$$
+P\left(N_e(s)=n\right) = \frac{(\lambda s)^n}{n!}e^{-\lambda s}
+$$
 \noindent
-From the PMF definition we can also reach the following result. Given $n$ \textit{i.i.d.} interarrival times $T_1,T_2,\dots,T_n \sim Exp\left(\frac{1}{\lambda}\right)$, $\lambda>0$:
+%From the PMF definition we can also reach the following result. Given $n$ \textit{i.i.d.} interarrival times $T_1,T_2,\dots,T_n \sim Exp\left(\frac{1}{\lambda}\right)$, $\lambda>0$:
+%$$
+%P\left(T_1,T_2,\dots,T_n \leq s\right) = 1-\sum_{m=0}^{n-1}P(N_e(s)=m)=1-\sum_{m=0}^{n-1}
+%\frac{(\lambda s)^m}{m!}e^{-\lambda s}
+%$$
+%Given by the fact that, for the sum of the $n$ interarrival times to be less than $s$, the number of events occurred in the time $s$ has to be at least $n$.
+Finally, it possible to compute the probability that at least $n$ occurrences of the event $e$ fall in the interval $s$:
 $$
-P\left(T_1,T_2,\dots,T_n \leq s\right) = 1-\sum_{m=0}^{n-1}P(N_e(s)=m)=1-\sum_{m=0}^{n-1}
-\frac{(\lambda s)^m}{m!}e^{-\lambda s}
+P\left(N_e(s) \geq n\right) = 1 - \sum_{m=0}^{n-1}P\left(N_e(s) = m \right) = 1 - \sum_{m=0}^{n-1} \frac{(\lambda s)^m}{m!}e^{-\lambda s}
 $$
-Given by the fact that, for the sum of the $n$ interarrival times to be less than $s$, the number of events occurred in the time $s$ has to be at least $n$.
+The first equality arises from the fact that the complement of $(n,n+1,n+2,\dots)$ is $(n-1,n-2,\dots)$. This is equivalent to splitting $s$ into $n$ intervals, each having width equal to $T_1,T_2,\dots,T_n$. Thus:
+$$
+P(T_1 + \dots + T_n \leq s) = 1 - \sum_{m=0}^{n-1} \frac{(\lambda s)^m}{m!}e^{-\lambda s}
+$$
 \newpage
 \paragraph{Stochastic Timed Automaton With Poisson Clock Structure}
 It's a stochastic timed automaton 
