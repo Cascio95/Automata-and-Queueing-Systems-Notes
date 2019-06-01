@@ -6,8 +6,6 @@
 \usepackage{mathtools}
 \usepackage{amssymb,amsmath}
 \usepackage{relsize}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\argmin}{arg\,min}
 \usepackage{tikz}
 \usetikzlibrary{automata,positioning,calc,shapes,arrows}
 \usepackage{multirow}
@@ -15,8 +13,13 @@
 \captionsetup[figure]{font=small,labelfont=small}
 \usepackage[english]{babel} 
 \usepackage{float}
-\linespread{1.2} 
 \usepackage[left=2.5cm,right=2.5cm,bottom=2cm,top=2cm,includeheadfoot]{geometry}
+\linespread{1.2}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand*{\transp}{\mathsf{p}}
+
 \title{Automata \& Queueing Systems}
 \author{Francesco Casciola}
 \begin{document}
@@ -62,7 +65,7 @@ x_k &= f(x_{k-1},e_k)
 %$$
 %(e_1,e_2,\dots,e_n ) \hspace{0.5cm} \text{is %feasible if: } e_k \in \Gamma (x_{k-1}) %\hspace{0.5cm} , \hspace{0.5cm} k\in (1,2,\dots,n) %\hspace{0.5cm} , \hspace{0.5cm} x_k=f(x_{k-1},e_k )
 %$$
-Unfeasible sequences aren’t always obvious, which means that to find some of them it’s either necessary to have a deep knowledge of the system or to run a huge amount of model simulations (assuming that it’s realistic enough) in order to detect sequences causing errors.
+Unfeasible sequences aren’t always obvious, which means that to find some of them it’s either necessary to have a deep knowledge of the system or to run a huge amount of model simulations (assuming that it’s realistic enough) to detect them.
 
 \paragraph{State Automaton with outputs} It’s a model through which Discrete Event Systems can be represented and it’s identified as a 7-tuple $(\mathcal{E},\mathcal{X},\Gamma,f,x_0,\mathcal{Y},g)$ where:
 \begin{itemize}
@@ -157,7 +160,7 @@ for all the events $e\in\mathcal{E}$.
 $$
 y_{e,k}=
 \begin{cases}
-v_{e,n_{e,k}} & \text{if } \left[\left(e\in\Gamma(x_{k-1})\wedge e\notin\Gamma(x_{k})\right)\vee\left(e=e_{k} \wedge e\in \Gamma(x_{k})\right)\right] \\
+v_{e,n_{e,k}} & \text{if } \left[\left(e\notin\Gamma(x_{k-1})\wedge e\in\Gamma(x_{k})\right)\vee\left(e=e_{k} \wedge e\in \Gamma(x_{k})\right)\right] \\
 y_{e,k-1}-y_{k-1}^{*} & \text{if } \left[e\in\Gamma(x_{k-1})\wedge e\neq e_{k} \wedge e\in\Gamma(x_{k}) \right] \\
 \end{cases}
 $$
@@ -177,34 +180,53 @@ The need to introduce elements of uncertainty in the model bring to the definiti
 It’s a model through which Discrete Event Systems with elements of uncertainty can be represented and it’s identified as a $6$-tuple $(\mathcal{E},\mathcal{X},\Gamma,P,p_0,F)$ where:
 \begin{itemize}
 \item $(\mathcal{E},\mathcal{X},\Gamma)$ are the same as for the timed automaton.
-\item $P$ is a set of transition probabilities from a state to another. It substitutes $f$ and it’s defined as follows:
+\item $\transp$ is a set of transition probabilities from a state to another. It substitutes $f$ and it’s defined as follows:
+%$$
+%\begin{matrix}
+%P(x'|x,e)=P(\mathcal{X}_{k+1}=x' \hspace{4pt}|\hspace{4pt} \mathcal{X}_k=x ; \mathcal{E}_(k+1)=e )&&,&&\forall x,x'\in\mathcal{X} &&,&& \forall \mathcal{E}\in \Gamma(x) 
+%\end{matrix}
+%$$
+% TODO Sostituire \begin matrix con questo in basso?
 $$
-\begin{matrix}
-P(x'|x,e)=P(\mathcal{X}_{k+1}=x' \hspace{4pt}|\hspace{4pt} \mathcal{X}_k=x ; \mathcal{E}_(k+1)=e )&&,&&\forall x,x'\in\mathcal{X} &&,&& \forall \mathcal{E}\in \Gamma(x) 
-\end{matrix}
-$$ 
+\transp(x' \mid x,e) = P\left(X_{k+1} = x' \mid X_k = x, \, E_{k+1} = e\right), \qquad \forall e \in \Gamma(x) , \quad \forall x,x' \in \mathcal{X}
+$$
 This set of probabilities generalises the deterministic case, in fact if we have:
 $$
 \begin{matrix}
 x'=f(x,e)&&\Rightarrow && P(x'\hspace{5pt}|\hspace{5pt}x,e)=1
 \end{matrix}
 $$
-\item $p_0$ is a discrete random variable which defines the initial state probabilities:
+\item $\transp_0$ is a discrete random variable which defines the initial state probabilities:
+%$$
+%\begin{matrix}
+%p_0(x)=P(x_0 \geq x) && , && \forall x\in \mathcal{X}
+%\end{matrix}
+%$$
+% TODO 
 $$
-\begin{matrix}
-p_0(x)=P(x_0 \geq x) && , && \forall x\in \mathcal{X}
-\end{matrix}
+\transp_0(x)=P(x_0 = x), \quad \forall x\in \mathcal{X}
 $$
-\item $F$ is the stochastic clock structure and $F_e$ are the distributions of the lifetimes:
+\item $F$ is the stochastic clock structure and $F_e$ are the cumulative distribution functions of the lifetimes of event $e$:
+% TODO
+%$$
+%\begin{matrix}
+%F={F_e :e \in \mathcal{E}} && ; && F_e=P(V_{e,i} \leq t)
+%\end{matrix}
+%$$
 $$
-\begin{matrix}
-F={F_e :e \in \mathcal{E}} && ; && F_e=P(V_{e,i} \leq t)
-\end{matrix}
+F = \{F_e : e \in \mathcal{E}\}, \quad F_e(t) = P(V_{e,i} \leq t)
 $$
 \end{itemize}
-\newpage
+\noindent
+We consider stochastic clock structure satisfying three assumptions:
+\begin{itemize}
+	\item The random variables $V_{e,i}$ are independent;
+	\item The lifetimes $V_{e,i}$ of the same event are identically distributed;
+	\item Lifetimes of \textit{different} events are independent.
+\end{itemize}
+
 \paragraph{Exponential Distribution}
-When computing probabilities (like the probability of reaching a given state within a certain amount of time), since the lifetimes are random variables, it’s normally possible to know only the distributions of the total lifetimes, but not the one of the ones of the residual lifetimes. An exception is the one of exponential distribution which has some helpful properties that we are going to observe. The exponential distribution is defined as follows:
+When computing probabilities (like the probability of reaching a given state within a certain amount of time), since the lifetimes are random variables, it’s normally possible to know only the distributions of the total lifetimes, but not the one of the ones of the residual lifetimes. An exception is the one of exponential distribution which has some helpful properties that we are going to observe. The exponential distribution $X \sim \text{Exp}(1/\lambda)$ (where $1/\lambda$ is the location parameter and $\lambda$ is the rate) is defined as follows:
 $$
 \begin{matrix}
 F_X(t)=P\left(X\leq t\right)=
@@ -220,63 +242,59 @@ f_X(t)=\frac{dF_X(t)}{dt}=
 \end{cases}
 \end{matrix}
 $$
-Where $F_X(t)$ is the CDF and $f_X(t)$ is the PDF. The aforementioned properties are the following:
+Where $F_X(t)$ is the CDF and $f_X(t)$ is the pdf. The aforementioned properties are the following:
 \begin{itemize}
 \item \textbf{Memoryless property}: 
 If the time between the occurrences $X$ of a given event is modelled trough an exponential distribution and at the time $t$ the event hasn't occurred yet, the probability of the occurrence of the event (computed at a time $s>t$) does not depend $t$. In formulae:
 $$
-P(X>t+s\hspace{4pt}|\hspace{4pt}X>t)=P(X>s)
+P(X>t+s \mid X>t)= P(X>s)
 $$
 \emph{Proof:}
-$$
-P(X>t+s\hspace{4pt}|\hspace{4pt}X>t) = \frac{P(X>t+s \textrm{ , } X>t)}{P(X>t)} = \frac{P(X>t+s)}{P(X>t)} = 
-\frac{1-P(X\leq t+s)}{1-P(X\leq t)} =
-$$
-$$
-= \frac{1-F_X(t+s)}{1-F_X(t)} = \frac{e^{-\lambda (t+s)}}{e^{-\lambda t}} = e^{-\lambda s} =
-1-P(X\leq s) = P(X>s)
-$$
+\begin{equation*}
+\begin{split}
+P(X>t+s \mid X>t) &= \frac{P(X>t+s \textrm{ , } X>t)}{P(X>t)} = \frac{P(X>t+s)}{P(X>t)}= \\
+= \frac{1-P(X\leq t+s)}{1-P(X\leq t)} &=\frac{1-F_X(t+s)}{1-F_X(t)} = \frac{e^{-\lambda (t+s)}}{e^{-\lambda t}} = e^{-\lambda s} = \\
+&= 1 - P(X \leq s) = P(X>s)
+\end{split}
+\end{equation*}
 \begin{flushright}
 $\blacksquare$
 \end{flushright}
 \item \textbf{Extended memoryless property}:
 The memoryless property can be defined in a more generic way by considering, instead of the time $t$, a generic time distribution $Y$, with support in $\left[0,\infty \right)$, independent from $X$:
 $$
-P(X>Y+s\hspace{4pt}|\hspace{4pt}X>Y)=P(X>s)
+P(X>Y+s \mid X>Y)=P(X>s)
 $$
-\newpage
 \emph{Proof:}
-$$
-P(X>Y+s\hspace{4pt}|\hspace{4pt}X>Y) = \frac{P(X>Y+s \textrm{ , } X>Y)}{P(X>Y)} = \frac{P(X>Y+s)}{P(X>Y)} 
-$$
-Let's focus on the numerator, the probability $P(X>Y+s)$ is equal to the marked area $(A)$ in the following plot which is the area in which the value of $X$ is greater than $Y+s$.
-\\\bigskip
+\begin{equation*}
+\begin{split}
+P(X>Y+s \mid X>Y) = \frac{P(X>Y+s \textrm{ , } X>Y)}{P(X>Y)} = \frac{P(X>Y+s)}{P(X>Y)} 
+\end{split}
+\end{equation*}
+Let's compute the numerator: $P(X>Y+s)$ is equal to the highlighted area $A$ in Figure \ref{fig:extmemlessarea} where the value of $X$ is greater than $Y+s$.
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.5\textwidth]{IMG/CommArea.eps}
-\caption{\small The highlighted area is the one for which $X-Y>s$}
-\label{Picture 1}
+\caption{The highlighted area $A$ is the one for which $X-Y>s$}
+\label{fig:extmemlessarea}
 \end{center}
 \end{figure}
 This consideration allows us to proceed as follows:
-$$
-P(X>Y+s) = P(X,Y\in A) = \int_{0}^{+\infty}dy\int_{y+s}^{+\infty}f_Y(y)\lambda e^{-\lambda x}dx=
-$$
-$$
-=\int_{0}^{+\infty}f_Y(y)dy\int_{y+s}^{+\infty}\lambda e^{-\lambda x}dx=\int_{0}^{+\infty}f_Y(y)
-\left[-e^{-\lambda x}\right]^{+\infty}_{y+s}dy =
-$$
-$$
+\begin{equation*}
+\begin{split}
+P(X>Y+s) = P(X,Y\in A) = \int_{0}^{+\infty}dy\int_{y+s}^{+\infty}f_Y(y)\lambda e^{-\lambda x}dx= &\\
+=\int_{0}^{+\infty}f_Y(y)dy\int_{y+s}^{+\infty}\lambda e^{-\lambda x}dx =\int_{0}^{+\infty}f_Y(y)
+\left[-e^{-\lambda x}\right]^{+\infty}_{y+s}dy = &\\
 =\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}e^{-\lambda s}dy = e^{-\lambda s}
-\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}dy 
-$$
-Since the $s$ in the lower limit of integration in the innermost integral produces only a term 
-$e^{-\lambda s}$ which can be put outside the integral, it's clear that the integral
-$$
 \int_{0}^{+\infty}f_Y(y)e^{-\lambda y}dy
+\end{split}
+\end{equation*}
+Since the $s$ in the lower limit of integration in the innermost integral produces only a term 
+$e^{-\lambda s}$ which can be put outside the integral, it's clear that
 $$
-Is equal to $P(X>Y)$. Thanks to this it's possible to solve the fraction to compute the probability 
-$P(X>Y+s\hspace{4pt}|\hspace{4pt}X>Y)$:
+\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}dy = P(X>Y)
+$$
+Now it is easy to compute $P(X>Y+s \mid X>Y)$:
 $$
 \frac{P(X>Y+s)}{P(X>Y)} = \frac{e^{-\lambda s}\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}dy }
 {\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}dy } = e^{-\lambda s} = 1-P(X\leq s) = P(X>s)
@@ -284,7 +302,7 @@ $$
 \begin{flushright}
 $\blacksquare$
 \end{flushright}
-\newpage
+
 \item \textbf{Superposition property}:
 Let's consider the case in it's required to know, for independent events with exponentially distributed lifetimes $\left( X_i\sim Exp\left(\frac{1}{\lambda_i}\right)\right)$, the one that occurs first. The random variable that must be taken into account is:
 $$
@@ -310,6 +328,7 @@ Where $\lambda' = \sum_{i=1}{n}{\lambda_i}$.
 $\blacksquare$
 \end{flushright}
 \end{itemize}
+% TODO c'è da aggiustare s con t; in alcuni punti manca s o t, o sono scambiati
 In addition to these properties, a `useful computation' (for the next topics) will be executed. Given two exponentially distributed random variables $X\sim Exp\left(\frac{1}{\lambda}\right),Y\sim Exp\left(\frac{1}{\mu}\right)$, let's compute the probability $P(X \leq Y+s)$:
 \\\bigskip
 \begin{figure}[H]
@@ -374,9 +393,9 @@ It's important to notice that there is no constraint about whether the events ar
 \noindent
 In stochastic timed automata with Poisson clock structure it's quite easy (compared to other models) to compute useful probabilities, such as:
 \begin{itemize}
-\item $P(E_{k+1}=e\hspace{4pt}|\hspace{4pt}X_k=x)$, which is the probability that the next event $E_{k+1}$ (uppercase, since it's a random variable) will be $e$, given that the current state is $x$:
+\item $P(E_{k+1}=e \mid X_k=x)$, which is the probability that the next event $E_{k+1}$ (uppercase, since it's a random variable) will be $e$, given that the current state is $x$:
 $$
-P(E_{k+1}=e\hspace{4pt}|\hspace{4pt}X_k=x)=P\left(Y_{e,k}< \min_{\small\left[
+P(E_{k+1}=e \mid X_k=x)=P\left(Y_{e,k}< \min_{\small\left[
 \begin{matrix}
 e'\in \Gamma(x) \cr
 e'\neq e
@@ -419,18 +438,18 @@ Exp \left(\frac{1}{\Lambda(x)-\lambda_e}\right)
 $$
 Which is the passage that makes possible to reach the last result of $(3)$.
 \newpage
-\item $P(X_{k+1}=x'\hspace{4pt}|\hspace{4pt}X_k=x)$ , which is the probability that the next state is $x'$, given that the current state is $x$:
+\item $P(X_{k+1}=x' \mid X_k=x)$ , which is the probability that the next state is $x'$, given that the current state is $x$:
 $$
-P(X_{k+1}=x'\hspace{4pt}|\hspace{4pt}X_k=x) \hspace{20pt}\underset{\textrm{rule}}{\overset{\textrm{total probability}}{=}}
+P(X_{k+1}=x' \mid X_k=x) \hspace{20pt}\underset{\textrm{rule}}{\overset{\textrm{total probability}}{=}}
 $$
 $$
 =\sum_{e\in \Gamma(x)}{
 \left[
 P\left(
-X_{k+1}=x'\hspace{4pt}|\hspace{4pt}X_k=x\textrm{, }E_{k+1}=e
+X_{k+1}=x' \mid X_k=x\textrm{, }E_{k+1}=e
 \right)\cdot
 P\left(
-E_{k+1}=e\hspace{4pt}|\hspace{4pt}X_k=x
+E_{k+1}=e \mid X_k=x
 \right)
 \right]
 }=
@@ -440,7 +459,7 @@ $$
 \sum_{e\in \Gamma(x)}{
 \left[
 P\left(
-X_{k+1}=x'\hspace{4pt}|\hspace{4pt}X_k=x\textrm{, }E_{k+1}=e
+X_{k+1}=x' \mid X_k=x\textrm{, }E_{k+1}=e
 \right)\cdot
 \frac{\lambda_e}{\Lambda(x)}
 \right]}\triangleq
@@ -449,7 +468,7 @@ $$
 \underset{\textrm{for a more lean notation}}{\triangleq}
 \sum_{e\in \Gamma(x)}{
 \left[
-P\left(x'\hspace{4pt}|\hspace{4pt}x,e
+P\left(x' \mid x,e
 \right)\cdot
 \frac{\lambda_e}{\Lambda(x)}
 \right]}
@@ -465,22 +484,22 @@ $$
 P_E=
 \left[
 \begin{matrix}
-P\left(E_{k+1}=1 \hspace{4pt}|\hspace{4pt} X_k=1\right)&&
-P\left(E_{k+1}=2 \hspace{4pt}|\hspace{4pt} X_k=1\right)&&
+P\left(E_{k+1}=1  \mid  X_k=1\right)&&
+P\left(E_{k+1}=2  \mid  X_k=1\right)&&
 \dots&&
-P\left(E_{k+1}=m \hspace{4pt}|\hspace{4pt} X_k=1\right)\cr\cr
-P\left(E_{k+1}=1 \hspace{4pt}|\hspace{4pt} X_k=2\right)&&
-P\left(E_{k+1}=2 \hspace{4pt}|\hspace{4pt} X_k=2\right)&&
+P\left(E_{k+1}=m  \mid  X_k=1\right)\cr\cr
+P\left(E_{k+1}=1  \mid  X_k=2\right)&&
+P\left(E_{k+1}=2  \mid  X_k=2\right)&&
 \dots&&
-P\left(E_{k+1}=m \hspace{4pt}|\hspace{4pt} X_k=2\right)\cr\cr
+P\left(E_{k+1}=m  \mid  X_k=2\right)\cr\cr
 \vdots&&
 \vdots&&
 \ddots&&
 \vdots\cr\cr
-P\left(E_{k+1}=1 \hspace{4pt}|\hspace{4pt} X_k=n\right)&&
-P\left(E_{k+1}=2 \hspace{4pt}|\hspace{4pt} X_k=n\right)&&
+P\left(E_{k+1}=1  \mid  X_k=n\right)&&
+P\left(E_{k+1}=2  \mid  X_k=n\right)&&
 \dots&&
-P\left(E_{k+1}=m \hspace{4pt}|\hspace{4pt} X_k=n\right)
+P\left(E_{k+1}=m  \mid  X_k=n\right)
 \end{matrix}
 \right]
 $$
@@ -490,22 +509,22 @@ $$
 P_X=
 \left[
 \begin{matrix}
-P\left(X_{k+1}=1 \hspace{4pt}|\hspace{4pt} X_k=1\right)&&
-P\left(X_{k+1}=2 \hspace{4pt}|\hspace{4pt} X_k=1\right)&&
+P\left(X_{k+1}=1  \mid  X_k=1\right)&&
+P\left(X_{k+1}=2  \mid  X_k=1\right)&&
 \dots&&
-P\left(X_{k+1}=n \hspace{4pt}|\hspace{4pt} X_k=1\right)\cr\cr
-P\left(X_{k+1}=1 \hspace{4pt}|\hspace{4pt} X_k=2\right)&&
-P\left(X_{k+1}=2 \hspace{4pt}|\hspace{4pt} X_k=2\right)&&
+P\left(X_{k+1}=n  \mid  X_k=1\right)\cr\cr
+P\left(X_{k+1}=1  \mid  X_k=2\right)&&
+P\left(X_{k+1}=2  \mid  X_k=2\right)&&
 \dots&&
-P\left(X_{k+1}=n \hspace{4pt}|\hspace{4pt} X_k=2\right)\cr\cr
+P\left(X_{k+1}=n  \mid  X_k=2\right)\cr\cr
 \vdots&&
 \vdots&&
 \ddots&&
 \vdots\cr\cr
-P\left(X_{k+1}=1 \hspace{4pt}|\hspace{4pt} X_k=n\right)&&
-P\left(X_{k+1}=2 \hspace{4pt}|\hspace{4pt} X_k=n\right)&&
+P\left(X_{k+1}=1  \mid  X_k=n\right)&&
+P\left(X_{k+1}=2  \mid  X_k=n\right)&&
 \dots&&
-P\left(X_{k+1}=n \hspace{4pt}|\hspace{4pt} X_k=n\right)
+P\left(X_{k+1}=n  \mid  X_k=n\right)
 \end{matrix}
 \right]
 $$
@@ -528,7 +547,7 @@ $$
 So it's possible to define the probability that the $k+1$-th state is $j$ as:
 $$
 P\left(X_{k+1}=j\right)=\sum_{i\in \mathcal{X}}{
-\underbrace{P\left(X_{k+1}=j \hspace{4pt}|\hspace{4pt} X_k=i\right)}_{(i,j)-th\text{ entry of }P_X}
+\underbrace{P\left(X_{k+1}=j  \mid  X_k=i\right)}_{(i,j)-th\text{ entry of }P_X}
 \underbrace{P\left(X_k=1\right)}_{i-th\text{ entry of }\Pi_X(k)}
 }
 $$ 
@@ -561,7 +580,7 @@ $$
 \noindent
 Likewise, it's possible to obtain the same result for the events: 
 $$
-P\left(E_{k+1}=e\right)=\sum_{x\in\mathcal{X}}{P\left(E_{k+1}=e\hspace{4pt}|\hspace{4pt}X_k=x\right)P\left(X_k=x\right)}
+P\left(E_{k+1}=e\right)=\sum_{x\in\mathcal{X}}{P\left(E_{k+1}=e \mid X_k=x\right)P\left(X_k=x\right)}
 $$
 
 $$
@@ -592,7 +611,7 @@ The State holding time $V(x)$ of the state $x$, in stochastic timed automata wit
 $$
 \sum_{e\in\Gamma(x)}{\lambda_e
 \left[
-1-P\left(x\hspace{4pt}|\hspace{4pt}x,e\right)
+1-P\left(x \mid x,e\right)
 \right]
 }
 $$
@@ -608,7 +627,7 @@ P(V(x)\leq t) = 1-P(V(x)> t)
 $$
 Now let's consider only the term $P(V(x)> t)$:
 $$
-P(V(x)> t)=P\left(\textrm{\emph{ no state transitions in the time interval }}\left( 0,t\right]\hspace{4pt}|\hspace{4pt}X(0)=x\right)=
+P(V(x)> t)=P\left(\textrm{\emph{ no state transitions in the time interval }}\left( 0,t\right] \mid X(0)=x\right)=
 $$
 $$
 =P\left(\underset{e\in\Gamma(x)}{\bigcap}\textrm{\emph{ no state transition triggered by event }}e
@@ -618,7 +637,7 @@ $$
 $$
 =\prod_{e\in\Gamma(x)}{
 P\left(\textrm{\emph{ no state transition triggered by event }}e\textrm{\emph{ in the time interval }}
-\left( 0,t\right]\hspace{4pt}|\hspace{4pt}X(0)=x\right)
+\left( 0,t\right] \mid X(0)=x\right)
 }=
 $$
 $$
@@ -628,7 +647,7 @@ P\left(
 \underset{n=0}{\overset{+\infty}{\bigcup}}
 \textrm{\emph{ event }}e\textrm{\emph{ occurs exactly }n\textrm{\emph{ times in }}}
 \left( 0,t\right]\textrm{\emph{ and}}\cr
-\textrm{\emph{ never triggers a state transition }} \hspace{4pt}|\hspace{4pt}X(0)=x
+\textrm{\emph{ never triggers a state transition }}  \mid X(0)=x
 \end{matrix}
 \right)\overset{\textrm{union of}}{\underset{\textrm{disjoint events}}{=}}
 }
@@ -638,7 +657,7 @@ $$
 P\left(
 \begin{matrix}
 \textrm{\emph{ event }}e\textrm{\emph{ occurs exactly }}n\textrm{\emph{ times in the interval }}\left( 0,t\right]\cr
-\textrm{\emph{ and never triggers a state transition }} \hspace{4pt}|\hspace{4pt}X(0)=x
+\textrm{\emph{ and never triggers a state transition }}  \mid X(0)=x
 \end{matrix}
 \right)}}=
 $$
@@ -649,9 +668,9 @@ In this last probability the occurrences of an \textit{i.i.d} set of exponential
 \begin{Large}
 $$
 =\prod_{e\in\Gamma(x)}{\sum_{n=0}^{+\infty}{
-\frac{\left(\lambda_e t\right)^{n}}{n!} e^{-\lambda_e t} P\left( x\hspace{4pt}|\hspace{4pt}x,e\right)^{n}}}
+\frac{\left(\lambda_e t\right)^{n}}{n!} e^{-\lambda_e t} P\left( x \mid x,e\right)^{n}}}
 =\prod_{e\in\Gamma(x)}{e^{-\lambda_e t}\sum_{n=0}^{+\infty}{
-\frac{\left[\lambda_e t\cdot P\left(x\hspace{4pt}|\hspace{4pt}x,e\right)\right]^n}{n!}
+\frac{\left[\lambda_e t\cdot P\left(x \mid x,e\right)\right]^n}{n!}
 }}=
 $$
 \end{Large}
@@ -663,11 +682,11 @@ The sum corresponds to the definition of the exponential: $e^x=\sum_{n=0}^{+\inf
 \begin{Large}
 $$
 =\prod_{e\in\Gamma(x)}{e^{-\lambda_e t}
-e^{\left[\lambda_e t\left(P\left(x\hspace{4pt}|\hspace{4pt}x,e\right)e\right)\right]}
+e^{\left[\lambda_e t\left(P\left(x \mid x,e\right)e\right)\right]}
 }
 =e^{\sum_{e\in\Gamma(x)}{\left(-\lambda_e
 \left[
-1-P\left(x\hspace{4pt}|\hspace{4pt}x,e\right)
+1-P\left(x \mid x,e\right)
 \right]t\right)
 }}
 $$
@@ -680,7 +699,7 @@ $$
 P\left(V(x)\leq t\right)=1-
 e^{\sum_{e\in\Gamma(x)}{\left(-\lambda_e
 \left[
-1-P\left(x\hspace{4pt}|\hspace{4pt}x,e\right)
+1-P\left(x \mid x,e\right)
 \right]t\right)
 }}
 $$
@@ -710,16 +729,16 @@ Given $X(t_1), X(t_2),\dots, X(t_n)$ $n-$tuples of random variables with $t_1<t_
 \noindent 
 Let $x(t)$ be the realisation of the random variable $X(t)$, if the condition:
 $$
-P\left(X\left(t+s\right)=\overset{\sim}{x}\hspace{4pt}|\hspace{4pt}X\left(\tau\right)=
+P\left(X\left(t+s\right)=\overset{\sim}{x} \mid X\left(\tau\right)=
 x\left(\tau\right),\hspace{5pt}\forall\tau\leq t\right)=
 P\left(X\left(t+s\right)=\overset{\sim}{x} \right)
 $$
 holds, the process is independent.
 \paragraph{Continuous Time Homogeneous Markov Chains (CTHMC)} are a subset of a kind of stochastic processes called `Markov processes' for which the definition of process independence is more relaxed than the standard one just given. If the condition:
 $$
-P\left(X\left(t+s\right)=\overset{\sim}{x}\hspace{4pt}|\hspace{4pt}X\left(\tau\right)=
+P\left(X\left(t+s\right)=\overset{\sim}{x} \mid X\left(\tau\right)=
 x\left(\tau\right),\hspace{5pt}\forall\tau\leq t\right)=
-P\left(X\left(t+s\right)=\overset{\sim}{x} \hspace{4pt}|\hspace{4pt} X\left(t\right)=x\left(t\right)\right)
+P\left(X\left(t+s\right)=\overset{\sim}{x}  \mid  X\left(t\right)=x\left(t\right)\right)
 $$
 holds, the process is independent. This definition allows the stochastic processes whose next realisation depends only on the current one to be called independent (\emph{`Markov property'}).
 
@@ -732,15 +751,15 @@ The Continuous Time Homogeneous Markov Chains are stochastic processes with the 
 \item \textbf{Markov property}.
 \item \textbf{Homogeneity}: 
 $$
-P\left(x\left(t+s\right)=j\hspace{4pt}|\hspace{4pt}x\left(t\right)=i\right)
+P\left(x\left(t+s\right)=j \mid x\left(t\right)=i\right)
 \hspace{5pt}=\hspace{5pt}
-P\left(x\left(t'+s\right)=j\hspace{4pt}|\hspace{4pt}x\left(t'\right)=i\right),\hspace{5pt}\forall t\neq t'
+P\left(x\left(t'+s\right)=j \mid x\left(t'\right)=i\right),\hspace{5pt}\forall t\neq t'
 $$
 \end{itemize} 
 \paragraph{Chapman-Kolmogorov Equation}
 Please notice that $x(t)\in \mathcal{X}$ implies that the process' random variables realisations are the states of the system modelled as a CTHMC. So, let's try to compute the probability that, given a current state $i$, after a time $s$ the state will be $j$:
 $$
-P_{i,j}(s)=P\left(X\left(t+s\right)\hspace{4pt}|\hspace{4pt} X\left(t\right)=i\right)
+P_{i,j}(s)=P\left(X\left(t+s\right) \mid  X\left(t\right)=i\right)
 $$
 \begin{figure}[H]
 \begin{center}
@@ -751,19 +770,19 @@ $$
 \noindent
 In order to execute the computation, let's consider the case in the figure above:
 $$
-P_{i,j}(s)=P\left(X\left(t+s\right)=j\hspace{4pt}|\hspace{4pt} X\left(t\right)=i\right)=
+P_{i,j}(s)=P\left(X\left(t+s\right)=j \mid  X\left(t\right)=i\right)=
 $$
 $$
 =\sum_{r\in \mathcal{X}}{
-P\left(X\left(t+s\right)=j\hspace{4pt}|\hspace{4pt} X\left(t+u\right)=r,\hspace{5pt} X\left(t\right)=i\right)
+P\left(X\left(t+s\right)=j \mid  X\left(t+u\right)=r,\hspace{5pt} X\left(t\right)=i\right)
 }\cdot 
-P\left(X\left(t+u\right)=r\hspace{4pt}|\hspace{4pt}X\left(t\right)=i\right)
+P\left(X\left(t+u\right)=r \mid X\left(t\right)=i\right)
 \hspace{5pt}\overset{Markov}{\underset{property}{=}}
 $$
 $$
 =\sum_{r\in \mathcal{X}}{
-P\left(X\left(t+s\right)=j\hspace{4pt}|\hspace{4pt} X\left(t+u\right)=r\right)
-P\left(X\left(t+u\right)=r\hspace{4pt}|\hspace{4pt} X\left(t+u\right)=i\right)
+P\left(X\left(t+s\right)=j \mid  X\left(t+u\right)=r\right)
+P\left(X\left(t+u\right)=r \mid  X\left(t+u\right)=i\right)
 }=
 $$
 $$
@@ -976,12 +995,12 @@ And let's consider a small increment $dt$ of $t$ such that a state transition (o
 $$
 F_i(t-dt)-F_i(t)\hspace{5pt}=\hspace{5pt}
 P\left( t < V(i) \leq t+dt\right)\hspace{5pt}=\hspace{5pt}
-P\left(V(i) \leq t+dt\hspace{4pt}|\hspace{4pt} V(i)>t \right)\cdot 
+P\left(V(i) \leq t+dt \mid  V(i)>t \right)\cdot 
 \underbrace{P\left(V(i)>t\right)}_{1-F_i(t)}
 $$
 $$
 \overset{\textrm{in particular}}{\Rightarrow}\hspace{10pt}
-P\left(V(i) \leq t+dt\hspace{4pt}|\hspace{4pt} V(i)>t \right)
+P\left(V(i) \leq t+dt \mid  V(i)>t \right)
 \hspace{5pt}=\hspace{5pt}
 \sum_{j\neq i}{P_{i,j}(dt)}
 =
@@ -1078,7 +1097,7 @@ Now the proof for the statement about the elements outside the main diagonal wil
 \begin{equation}
 P\left( \textrm{a transition from }i\textrm{ to }j 
 \textrm{ occurs in the interval} \left[ t, t+dt\right]
-\hspace{4pt}|\hspace{4pt}
+ \mid 
 X_k=i
 \right)
 \hspace{5pt}
@@ -1119,7 +1138,7 @@ $$
 \noindent 
 Let's now introduce another probability, which is the generic state transition probability from $i$ to $j$, without taking into account the time:
 $$
-p_{i,j}=P(X_{k+1}=j \hspace{4pt}|\hspace{4pt} X_k=i)
+p_{i,j}=P(X_{k+1}=j  \mid  X_k=i)
 $$
 $p_{i,j}$ can be obtained as sum of the probabilities like $(5)$ computed for all the intervals of the kind 
 $[t_n,t_n+dt_n]$, with $t_0=0$, $dt \rightarrow 0$, $n\in \mathbb{N}^+$:
@@ -1130,7 +1149,7 @@ p_{i,j}
 \hspace{5pt}
 \int_0^{+\infty}{P\left( \textrm{a transition from }i\textrm{ to }j 
 \textrm{ occurs in the interval} \left[ t, t+dt\right]
-\hspace{4pt}|\hspace{4pt}
+ \mid 
 X_k=i
 \right)} 
 \hspace{5pt}
@@ -1171,7 +1190,7 @@ $$
 \hspace{5pt}=\hspace{5pt} 
 \sum_{i\in\mathcal{X}}{
 \underbrace{
-P\left( x \left( t \right) = j \hspace{4pt}|\hspace{4pt}  x\left(0\right)=i\right)
+P\left( x \left( t \right) = j  \mid   x\left(0\right)=i\right)
 }_{P_{i,j}(t)}
 \cdot
 \underbrace{
@@ -1403,11 +1422,11 @@ So, in order to find the equivalent Markov Chain for a Stochastic Timed Automato
 \begin{itemize}
 \item Compute the expected value of the state holding time for every state, and compute the $q_{i,i}$ as:
 $$
-q_{i,i}=-\frac{1}{E[V(i)]}=-\sum_{e\in\Gamma(i)}{\lambda_e\left[1-P(i\hspace{4pt}|\hspace{4pt}i,e)\right]}
+q_{i,i}=-\frac{1}{E[V(i)]}=-\sum_{e\in\Gamma(i)}{\lambda_e\left[1-P(i \mid i,e)\right]}
 $$
 \item Compute the $p_{i,j}$ according to the frequentist probability in order to find the corresponding $q_{i,j}$ as:
 $$
-q_{i,j}=-q_{i,i}p_{i,j}=\sum_{e\in\Gamma(i)}{\lambda_e P(i\hspace{4pt}|\hspace{4pt}i,e)}
+q_{i,j}=-q_{i,i}p_{i,j}=\sum_{e\in\Gamma(i)}{\lambda_e P(i \mid i,e)}
 $$
 \end{itemize}
 Where $\lambda_e$ is the rate of the exponential distribution (since all the events lifetimes' distributions are exponential) of the event $e$.
