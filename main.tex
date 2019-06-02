@@ -355,6 +355,7 @@ $$
 $$
 Setting $s=0$ yields a closed-form formula for computing $P(X\leq Y)$ (skipping the entire chain of integration) which corresponds to the probability of lifetime X being less than lifetime Y.
 \begin{equation}
+\label{eq:xlessy}
 P(X\leq Y)= \frac{\lambda}{\lambda + \mu}
 \end{equation}
 In the next chapter this last result will be used a lot, so it's important to keep it in mind.
@@ -402,54 +403,61 @@ It's important to notice that there is no constraint about whether the events ar
 
 \bigskip
 \noindent
-In stochastic timed automata with Poisson clock structure it's quite easy (compared to other models) to compute useful probabilities, such as:
-\begin{itemize}
-\item $P(E_{k+1}=e \mid X_k=x)$, which is the probability that the next event $E_{k+1}$ (uppercase, since it's a random variable) will be $e$, given that the current state is $x$:
+In stochastic timed automata with Poisson clock structure it's quite straightforward (compared to other models) to compute useful probabilities via closed-form formulas, such as:
+\begin{enumerate}
+\item $P(E_{k+1}=e \mid X_k=x)$ which is the probability that the next event $E_{k+1}$ (uppercase, since it's a random variable) will be $e$, given that the current state is $x$:
 $$
-P(E_{k+1}=e \mid X_k=x)=P\left(Y_{e,k}< \min_{\small\left[
+P(E_{k+1}=e \mid X_k=x)=P\left(Y_{e,k} <
+\min_{\left[
 \begin{matrix}
-e'\in \Gamma(x) \cr
+e'\in \Gamma(x) \\
 e'\neq e
-\end{matrix}\right]
-}{\left\lbrace Y_{e',k}\right\rbrace }\right)
+\end{matrix}
+\right]}
+\left\lbrace Y_{e',k}\right\rbrace \right)
 $$
-Were the $Y$ random variables are the residual lifetimes of the considered events. Since in this case the residual lifetimes follow exponential distribution, it's possible to use the equation $(1)$ to proceed with the computation:
+Where the $Y$ random variables are the residual lifetimes of the considered events. Since the residual lifetimes follow exponential distribution, it's possible to use the equation \ref{eq:xlessy} and the superposition property to proceed with the computation:
 \begin{equation}
-=P\left(Y_{e,k}< \min_{\small\left[
+P\left(Y_{e,k} <
+\min_{\left[
 \begin{matrix}
-e'\in \Gamma(x) \cr
+e'\in \Gamma(x) \\
 e'\neq e
-\end{matrix}\right]
-}{\left\lbrace Y_{e',k}\right\rbrace }\right)
-=\frac{\lambda_e}{\lambda_e+\left[\Lambda(x)-\lambda_e\right]}=\frac{\lambda_e}{\Lambda(x)}
+\end{matrix}
+\right]}
+\left\lbrace Y_{e',k}\right\rbrace \right)
+=\frac{\lambda_e}{\lambda_e+(\Lambda(x)-\lambda_e)}=\frac{\lambda_e}{\Lambda(x)}
 \end{equation}
-
 \noindent
-Where $\Lambda(x)$ comes from $\min_{e'}{\left\lbrace Y_{e',k}\right\rbrace } \sim Exp\left(\frac{1}
-{\sum{\lambda_e'}}\right)$. $\Lambda(x)$ was inserted in order to ease the computation and it's defined as:
+% TODO forse è meglio essere sintetici
+%Where $\Lambda(x)$ comes from $\min_{\dots}\left\lbrace Y_{e',k}\right\rbrace \sim Exp\left(1/\left(\Lambda(x) - \lambda_e\right)\right)$. $\Lambda(x)$ was inserted in order to ease the computation and it's defined as:
+%$$
+%\Lambda(x)=\sum_{e \in \Gamma (x)}{\lambda_e}
+%$$
+%So, by defining $\Lambda(x)$ as the sum of the rates of all the possible events, it's possible to obtain:
+%$$
+%\min_{\left[
+%\begin{matrix}
+%e'\in \Gamma(x) \\
+%e'\neq e
+%\end{matrix}\right]
+%}{\left\lbrace Y_{e',k}\right\rbrace }) \sim Exp\left(\frac{1}{\underset{{\left[
+%\begin{matrix}
+%e'\in \Gamma(x) \\
+%e'\neq e
+%\end{matrix}\right]
+%}}{\sum
+%}\lambda_e'}\right)
+%\triangleq
+%Exp \left(\frac{1}{\Lambda(x)-\lambda_e}\right)
+%$$
+%Which is the passage that makes possible to reach the last result of $(3)$.
+Where $(\Lambda(x)-\lambda_e)$ is the rate of $Y_{e',k}$ since $\Lambda(x)$ is the sum of the rates of all the feasible events $e \neq e'$:
 $$
-\Lambda(x)=\sum_{e \in \Gamma (x)}{\lambda_e}
+\Lambda(x) = \mathlarger{\sum_{e \in \Gamma(x)}\lambda_e}
 $$
-So, by defining $\Lambda(x)$ as the sum of the rates of all the possible events, it's possible to obtain:
-$$
-\min_{\small\left[
-\begin{matrix}
-e'\in \Gamma(x) \cr
-e'\neq e
-\end{matrix}\right]
-}{\left\lbrace Y_{e',k}\right\rbrace }) \sim Exp\left(\frac{1}{\underset{{\small\left[
-\begin{matrix}
-e'\in \Gamma(x) \cr
-e'\neq e
-\end{matrix}\right]
-}}{\sum
-}\lambda_e'}\right)
-\triangleq
-Exp \left(\frac{1}{\Lambda(x)-\lambda_e}\right)
-$$
-Which is the passage that makes possible to reach the last result of $(3)$.
-\newpage
-\item $P(X_{k+1}=x' \mid X_k=x)$ , which is the probability that the next state is $x'$, given that the current state is $x$:
+
+\item $P(X_{k+1}=x' \mid X_k=x)$ which is the probability that the next state is $x'$, given that the current state is $x$:
 $$
 P(X_{k+1}=x' \mid X_k=x) \hspace{20pt}\underset{\textrm{rule}}{\overset{\textrm{total probability}}{=}}
 $$
@@ -479,12 +487,12 @@ $$
 \underset{\textrm{for a more lean notation}}{\triangleq}
 \sum_{e\in \Gamma(x)}{
 \left[
-P\left(x' \mid x,e
+\transp\left(x' \mid x,e
 \right)\cdot
 \frac{\lambda_e}{\Lambda(x)}
 \right]}
 $$
-\end{itemize}
+\end{enumerate}
 These two results are quite good, but there are still more things that can be done. By defining 
 $\mathcal{E}=\left\lbrace 1,2,\dots,m \right\rbrace$ and 
 $\mathcal{X}=\left\lbrace 1,2,\dots,n \right\rbrace$
@@ -498,15 +506,15 @@ P_E=
 P\left(E_{k+1}=1  \mid  X_k=1\right)&&
 P\left(E_{k+1}=2  \mid  X_k=1\right)&&
 \dots&&
-P\left(E_{k+1}=m  \mid  X_k=1\right)\cr\cr
+P\left(E_{k+1}=m  \mid  X_k=1\right)\\\\
 P\left(E_{k+1}=1  \mid  X_k=2\right)&&
 P\left(E_{k+1}=2  \mid  X_k=2\right)&&
 \dots&&
-P\left(E_{k+1}=m  \mid  X_k=2\right)\cr\cr
+P\left(E_{k+1}=m  \mid  X_k=2\right)\\\\
 \vdots&&
 \vdots&&
 \ddots&&
-\vdots\cr\cr
+\vdots\\\\
 P\left(E_{k+1}=1  \mid  X_k=n\right)&&
 P\left(E_{k+1}=2  \mid  X_k=n\right)&&
 \dots&&
@@ -523,15 +531,15 @@ P_X=
 P\left(X_{k+1}=1  \mid  X_k=1\right)&&
 P\left(X_{k+1}=2  \mid  X_k=1\right)&&
 \dots&&
-P\left(X_{k+1}=n  \mid  X_k=1\right)\cr\cr
+P\left(X_{k+1}=n  \mid  X_k=1\right)\\\\
 P\left(X_{k+1}=1  \mid  X_k=2\right)&&
 P\left(X_{k+1}=2  \mid  X_k=2\right)&&
 \dots&&
-P\left(X_{k+1}=n  \mid  X_k=2\right)\cr\cr
+P\left(X_{k+1}=n  \mid  X_k=2\right)\\\\
 \vdots&&
 \vdots&&
 \ddots&&
-\vdots\cr\cr
+\vdots\\\\
 P\left(X_{k+1}=1  \mid  X_k=n\right)&&
 P\left(X_{k+1}=2  \mid  X_k=n\right)&&
 \dots&&
@@ -555,14 +563,15 @@ $$
 
 \bigskip
 \noindent
-So it's possible to define the probability that the $k+1$-th state is $j$ as:
+So it's possible to redefine $P(X_{k+1} = x' \mid X_k = x)$ as the probability that the $k+1$-th state is $j$ as:
 $$
-P\left(X_{k+1}=j\right)=\sum_{i\in \mathcal{X}}{
-\underbrace{P\left(X_{k+1}=j  \mid  X_k=i\right)}_{(i,j)-th\text{ entry of }P_X}
+P\left(X_{k+1}=j\right)=\sum_{i\in \mathcal{X}}
+{
+\underbrace{P\left(X_{k+1}=j  \mid  X_k=i\right)}_{(i,j)-\text{th}\text{ entry of }P_X}
 \underbrace{P\left(X_k=1\right)}_{i-th\text{ entry of }\Pi_X(k)}
 }
 $$ 
-which will be the $j$-th entry of the vector $\Pi_X(k+1)$. 
+$P(X_{k+1} = j)$ will be the $j$-th entry of the vector $\Pi_X(k+1)$ and of the product $\Pi_X(k) \cdot P_X$. 
 \newpage
 \noindent
 So assuming that $\Pi_X(0)$ is known:
@@ -570,20 +579,20 @@ $$
 \Pi_X(0)=
 \left[
 \begin{matrix}
-P_0(1),&
-P_0(2),&
-\cdots,&
-P_0(n)
+\transp_0(1),&
+\transp_0(2),&
+\dots,&
+\transp_0(n)
 \end{matrix}
 \right]
 $$
 $$
 \begin{matrix}
-\Pi_X(1)&=&\Pi_X(0)P_X\cr
-\Pi_X(2)&=&\Pi_X(1)P_X&=&\Pi_X(0)P_X\cr
-\Pi_X(3)&=&\Pi_X(2)P_X&=&\Pi_X(0)P_X^2\cr
-&&\vdots\cr
-\Pi_X(k)&=&\Pi_X(0)P_X^k
+\Pi_X(1)&=&\Pi_X(0) \cdot P_X\\
+\Pi_X(2)&=&\Pi_X(1) \cdot P_X&=&\Pi_X(0) \cdot P_X^2\\
+\Pi_X(3)&=&\Pi_X(2) \cdot P_X&=&\Pi_X(0) \cdot P_X^3\\
+&&\vdots\\
+\Pi_X(k)&=&\Pi_X(k-1) \cdot P_X&=&\Pi_X(0)P_X^k
 \end{matrix}
 $$
 
@@ -591,7 +600,7 @@ $$
 \noindent
 Likewise, it's possible to obtain the same result for the events: 
 $$
-P\left(E_{k+1}=e\right)=\sum_{x\in\mathcal{X}}{P\left(E_{k+1}=e \mid X_k=x\right)P\left(X_k=x\right)}
+P\left(E_{k+1}=j\right)=\sum_{i\in\mathcal{X}}{P\left(E_{k+1}=j \mid X_k=i\right)P\left(X_k=i\right)}
 $$
 
 $$
@@ -600,7 +609,7 @@ $$
 \begin{matrix}
 P\left(E_K=1\right),&
 P\left(E_K=2\right),&
-\cdots,&
+\dots,&
 P\left(E_K=m\right)
 \end{matrix}
 \right]
@@ -610,7 +619,9 @@ $$
 \Pi_E(k+1)=\Pi_X(k)P_E=\Pi_X(0)P_X^kP_E
 $$
 With this result, it's finally possible to say that \emph{when using stochastic timed automata with Poisson clock structure, it's enough to know the matrices $P_X$ and $P_E$ and the vector $\Pi_X(0)$ to find all the future state and event probabilities}. 
-\paragraph{Distribution of State Holding Times} Let's consider the state $x$ of a stochastic timed automaton with Poisson clock structure. The state holding time $V(x)$ is defined as the time spent by the system in the state $x$, so $V(x)$ is a continuous random variable. Moreover, when computing a state holding time, it's fundamental to keep in mind the fact that, while the system is in state $x$, events can occur without causing a state transition and, therefore, without affecting the value of $V(x)$.
+\paragraph{Distribution of State Holding Times} Let's consider the state $x$ of a stochastic timed automaton with Poisson clock structure. The state holding time $V(x)$ is a continuous random variable defined as the time spent by the system in the state $x$. Notice that, while the system is in state $x$, there might occur events which do not trigger a state transition: this implies that $V(x)$ keeps increasing until the system leaves state $x$.
+% TODO Meglio detto cosi?
+%, so $V(x)$ is a continuous random variable. Moreover, when computing a state holding time, it's fundamental to keep in mind the fact that, while the system is in state $x$, events can occur without causing a state transition and, therefore, without affecting the value of $V(x)$.
 
 \bigskip
 \noindent
