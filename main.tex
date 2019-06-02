@@ -245,7 +245,7 @@ $$
 Where $F_X(t)$ is the CDF and $f_X(t)$ is the pdf. The aforementioned properties are the following:
 \begin{itemize}
 \item \textbf{Memoryless property}: 
-If the time between the occurrences $X$ of a given event is modelled trough an exponential distribution and at the time $t$ the event hasn't occurred yet, the probability of the occurrence of the event (computed at a time $s>t$) does not depend $t$. In formulae:
+If the time between the occurrences $X$ of a given event is modelled through an exponential distribution and at the time $t$ the event hasn't occurred yet, the probability of the occurrence of the event (computed at a time $s>t$) does not depend $t$. In formulae:
 $$
 P(X>t+s \mid X>t)= P(X>s)
 $$
@@ -323,7 +323,7 @@ $$
 $$
 = 1-\prod_{i=1}^{n}{e^{-\lambda_{i}t}} = 1-e^{-\sum_{i}{\lambda_i t}} = 1-e^{-t\lambda'}
 $$
-Where $\lambda' = \sum_{i=1}{n}{\lambda_i}$.
+Where $\lambda' = \sum_{i=1}^{n}{\lambda_i}$.
 \begin{flushright}
 $\blacksquare$
 \end{flushright}
@@ -351,13 +351,13 @@ $$
 = \left[-e^{-\mu y} + \frac{\mu e^{-\lambda s}}{\lambda + \mu}e^{-(\lambda+\mu)y}\right]_{0}^{+\infty} =
 $$
 $$
-= 1-\frac{\mu e^{-\lambda t}}{\lambda + \mu} \overset{\textrm{let's set }s=0}{\hspace{15pt}=\hspace{15pt}} 1-\frac{\mu}{\lambda + \mu} = \frac{\lambda}{\lambda + \mu} = P(X\leq Y) 
+= 1-\frac{\mu e^{-\lambda s}}{\lambda + \mu} 
 $$
-In the next chapter this last result
+Setting $s=0$ yields a closed-form formula for computing $P(X\leq Y)$ (skipping the entire chain of integration) which corresponds to the probability of lifetime X being less than lifetime Y.
 \begin{equation}
 P(X\leq Y)= \frac{\lambda}{\lambda + \mu}
 \end{equation}
-will be used a lot, so it's important to keep it in mind.
+In the next chapter this last result will be used a lot, so it's important to keep it in mind.
 \section{Stochastic Timed Automata With Poisson Clock Structure}
 \paragraph{Poisson Counting Processes} It's a process which counts the occurrences of an event which is always possible. In particular, the `interarrival times' $T_i$ between any two occurrences of the same event are \textit{i.i.d.} and their distribution is:
 $$
@@ -371,7 +371,7 @@ P\left(N_e(t,t+s)=n\right)&, \qquad n = 0,1,2,\dots \\
 P\left(N_e(t,t+s)=n\right)& = \frac{(\lambda s)^n}{n!}e^{-\lambda s}
 \end{split}
 \end{equation*}
-Quite evidently, the pmf depends only on $s$, not $t$, so:
+Quite evidently, the pmf depends only on $s$ (due to the memoryless property), so:
 $$
 P\left(N_e(s)=n\right) = \frac{(\lambda s)^n}{n!}e^{-\lambda s}
 $$
@@ -386,19 +386,19 @@ Finally, it possible to compute the probability that at least $n$ occurrences of
 $$
 P\left(N_e(s) \geq n\right) = 1 - \sum_{m=0}^{n-1}P\left(N_e(s) = m \right) = 1 - \sum_{m=0}^{n-1} \frac{(\lambda s)^m}{m!}e^{-\lambda s}
 $$
-The first equality arises from the fact that the complement of $(n,n+1,n+2,\dots)$ is $(n-1,n-2,\dots)$. This is equivalent to splitting $s$ into $n$ intervals, each having width equal to $T_1,T_2,\dots,T_n$. Thus:
+The first equality arises from the fact that the complement of $(n,n+1,n+2,\dots)$ is $(n-1,n-2,\dots)$. This is equivalent to splitting $s$ into $n$ intervals, each having width equal to $T_i$. Thus:
 $$
 P(T_1 + \dots + T_n \leq s) = 1 - \sum_{m=0}^{n-1} \frac{(\lambda s)^m}{m!}e^{-\lambda s}
 $$
-\newpage
+
 \paragraph{Stochastic Timed Automaton With Poisson Clock Structure}
 It's a stochastic timed automaton 
-$(\mathcal{E},\mathcal{X},\Gamma,P,p_0,F)$ where $F={F_e : e\in \mathcal{E}}$, \textbf{with \textit{i.i.d.} events' lifetimes} and:
+$(\mathcal{E},\mathcal{X},\Gamma,\transp,\transp_0,F)$ where $F = \{F_e : e \in \mathcal{E}\}$, \textbf{with \textit{i.i.d.} events' lifetimes} and:
 $$
-F_e(t)=1-e^{-\lambda_e t},\hspace{20pt}t\geq 0,\hspace{20pt}\lambda_e>0
+F_e(t)=1-e^{-\lambda_e t}, \quad t\geq 0, \quad \lambda_e>0
 $$
 It's important to notice that there is no constraint about whether the events are always possible or not, this means that the `Poisson clock structure' doesn't refer to a Poisson counting process but to the fact that all the events have exponential interarrival times.
-\emph{Moreover, for stochastic timed automata with Poisson clock structure, the residual lifetimes of the events follow the same distribution of the corresponding total lifetime}. This last property can be proved through induction. The actual demonstration can be considered as homework by the reader.
+\emph{Moreover, for stochastic timed automata with Poisson clock structure, the residual lifetimes of the events follow the same distribution of the corresponding total lifetimes}. This last property can be proved through induction. The actual demonstration can be considered as homework by the reader.
 
 \bigskip
 \noindent
