@@ -16,12 +16,12 @@
 \usepackage[left=2.5cm,right=2.5cm,bottom=2cm,top=2cm,includeheadfoot]{geometry}
 % Da scommentare per abilitare un ambiente Large
 % migliore rispetto al Large normale
-%\usepackage{environ}
-%\NewEnviron{BiggerEquation*}{%
-%\begin{equation*}
-%\scalebox{1.5}{$\BODY$}
-%\end{equation*}
-%}
+\usepackage{environ}
+\NewEnviron{BiggerEquation*}{%
+\begin{equation*}
+\scalebox{1.5}{$\BODY$}
+\end{equation*}
+}
 \linespread{1.2}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -343,7 +343,7 @@ In addition to these properties, a `useful computation' (for the next topics) wi
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.5\textwidth]{IMG/CommArea2.eps}
-\caption{\small The highlighted area is the one for which $X-Y\leq s$}
+\caption{The highlighted area is the one for which $X-Y\leq s$}
 \label{Picture 2}
 \end{center}
 \end{figure}
@@ -709,87 +709,75 @@ The stochastic processes are actually classified depending on the nature of $T$:
 and it's also called \emph{`chain'}.
 \item \textbf{if $T$ is continuous} the process is a \emph{`continuous time stochastic process'}.
 \end{itemize}
-To characterise stochastic processes it's necessary to provide joint distributions of all the possible $n-$tuples of the random variables which compose the process. Since this is really hard to realise, in these notes the stochastic processes will be used
+To characterise stochastic processes it's necessary to provide joint distributions of all the possible $n$-tuples of the random variables which compose the process. Since this is really hard to realise, in these notes the stochastic processes will be used
 only when the independence between the random variables holds, therefore with stochastic timed automata with Poisson clock structure. Finally, the independence concept in stochastic processes is defined as follows:
 
 \bigskip
 \noindent 
-Given $X(t_1), X(t_2),\dots, X(t_n)$ $n-$tuples of random variables with $t_1<t_2<\dots<t_n \in T$ and $n=2,3,4,\dots$ the process is said \emph{`independent'} only if all the $n-$tuples are independent. 
+Given $X(t_1), X(t_2),\dots, X(t_n)$ random variables with $t_1<t_2<\dots<t_n \in T$ and $n=1,2,\dots$ the process is said \textit{`independent'} if all the $n-$tuples are independent. 
 
 \bigskip
 \noindent 
-Let $x(t)$ be the realisation of the random variable $X(t)$, if the condition:
+Let $x(t)$ be the realisation of the random variable $X(t)$, if the equality:
 $$
 P\left(X\left(t+s\right)=\overset{\sim}{x} \mid X\left(\tau\right)=
 x\left(\tau\right),\hspace{5pt}\forall\tau\leq t\right)=
 P\left(X\left(t+s\right)=\overset{\sim}{x} \right)
 $$
-holds, the process is independent.
+holds, the process is independent. This means that the history of the past evolution of the system is irrelevant for predicting the future evolution ($t+s$ is called \textit{prediction horizon}).
 \paragraph{Continuous Time Homogeneous Markov Chains (CTHMC)} are a subset of a kind of stochastic processes called `Markov processes' for which the definition of process independence is more relaxed than the standard one just given. If the condition:
 $$
-P\left(X\left(t+s\right)=\overset{\sim}{x} \mid X\left(\tau\right)=
-x\left(\tau\right),\hspace{5pt}\forall\tau\leq t\right)=
-P\left(X\left(t+s\right)=\overset{\sim}{x}  \mid  X\left(t\right)=x\left(t\right)\right)
+P\left(X(t+s)=\overset{\sim}{x} \mid X(\tau)=
+x(\tau),\;\forall\tau\leq t\right)=
+P\left(X(t+s)=\overset{\sim}{x} \mid X(t)=x(t)\right)
 $$
-holds, the process is independent. This definition allows the stochastic processes whose next realisation depends only on the current one to be called independent (\emph{`Markov property'}).
+holds, the process is independent. This definition allows the stochastic processes whose next realisation depends only on the current one to be called independent (\textit{`Markov property'}).
 
 \bigskip
 \noindent
-The Continuous Time Homogeneous Markov Chains are stochastic processes with the following properties:
+The Continuous Time Homogeneous Markov Chains is a stochastic process with the following properties:
 \begin{itemize}
-\item $T=\mathbb{R}^+\Rightarrow\left\lbrace t\in\mathbb{R};\hspace{3pt}t\geq 0\right\rbrace $ (\textbf{Continuous Time}).
-\item $x(t)\in \mathcal{X}=\left\lbrace 1,2,\dots\right\rbrace$ (\textbf{Chain}).
+\item $T=\mathbb{R}^+\Rightarrow\left\lbrace t\in\mathbb{R}:\;t\geq 0\right\rbrace $ (\textbf{Continuous Time}).
+\item $X(t)\in \mathcal{X}=\left\lbrace 1,2,\dots\right\rbrace$ (\textbf{Chain}).
 \item \textbf{Markov property}.
-\item \textbf{Homogeneity}: 
+\item \textbf{Homogeneity}: the transition function depends only on the prediction horizon
 $$
-P\left(x\left(t+s\right)=j \mid x\left(t\right)=i\right)
-\hspace{5pt}=\hspace{5pt}
-P\left(x\left(t'+s\right)=j \mid x\left(t'\right)=i\right),\hspace{5pt}\forall t\neq t'
+P\left(X(t+s)=j \mid X(t)=i\right) = P\left(X(t'+s)=j \mid X(t')=i\right),\;\forall t\neq t'
+$$
+Thus it can be rewritten as:
+$$
+\transp_{i,j}(s) = P\left(X(t+s)=j \mid X(t)=i\right)
 $$
 \end{itemize} 
 \paragraph{Chapman-Kolmogorov Equation}
 Please notice that $x(t)\in \mathcal{X}$ implies that the process' random variables realisations are the states of the system modelled as a CTHMC. So, let's try to compute the probability that, given a current state $i$, after a time $s$ the state will be $j$:
 $$
-P_{i,j}(s)=P\left(X\left(t+s\right) \mid  X\left(t\right)=i\right)
+\transp_{i,j}(s) = P\left(X(t+s)=j \mid X(t)=i\right)
 $$
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.35\textwidth]{IMG/CTHMC1.eps}
-\label{Picture 3}
+\caption{At time $t$ the current state is $i$. At $t+s$ the next state is $j$, while at $t+u$ the state is $r \in \mathcal{X}$ which can be $i$, $j$ or any other state.}
+\label{fig:chapmanTimeDiagram}
 \end{center}
 \end{figure}
 \noindent
-In order to execute the computation, let's consider the case in the figure above:
-$$
-P_{i,j}(s)=P\left(X\left(t+s\right)=j \mid  X\left(t\right)=i\right)=
-$$
-$$
-=\sum_{r\in \mathcal{X}}{
-P\left(X\left(t+s\right)=j \mid  X\left(t+u\right)=r,\hspace{5pt} X\left(t\right)=i\right)
-}\cdot 
-P\left(X\left(t+u\right)=r \mid X\left(t\right)=i\right)
-\hspace{5pt}\overset{Markov}{\underset{property}{=}}
-$$
-$$
-=\sum_{r\in \mathcal{X}}{
-P\left(X\left(t+s\right)=j \mid  X\left(t+u\right)=r\right)
-P\left(X\left(t+u\right)=r \mid  X\left(t+u\right)=i\right)
-}=
-$$
-$$
-=\sum_{r\in \mathcal{X}}{
-P_{i,r}\left(u\right)
-P_{r,j}\left(s-u\right)
-}
-$$
-The result of the computation:
-\begin{equation}
-P_{i,j}(s)
-=\sum_{r\in \mathcal{X}}{
-P_{i,r}\left(u\right)
-P_{r,j}\left(s-u\right)
-}
-\end{equation}
+In order to execute the computation, let's consider the case in Figure \ref{fig:chapmanTimeDiagram}:
+\begin{equation*}
+\begin{aligned}
+\transp_{i,j}(s)&=P\left(X(t+s)=j \mid  X(t)=i\right)=\footnotemark \\
+&=\sum_{r\in\mathcal{X}}P\left(X(t+s) = j \mid X(t+u) = r, \, X(t) = i\right) \cdot P\left(X(t+u) = r \mid X(t) = i\right) = \footnotemark \\
+&=\sum_{r\in\mathcal{X}}P\left(X(t+s) = j \mid X(t+u) = r\right) \cdot P\left(X(t+u) = r \mid X(t) = i\right) = \\
+&=\sum_{r\in\mathcal{X}}\transp_{r,j}(s-u)\cdot\transp_{i,r}(u)
+\end{aligned}
+\footnotetext{By applying the total proability rule}
+\footnotetext{By applying the Markov property}
+\end{equation*}
+\noindent
+The equality:
+\begin{BiggerEquation*}
+\transp_{i,j}(s) = \sum_{r\in \mathcal{X}}P_{i,r}(u)\cdot P_{r,j}(s-u)
+\end{BiggerEquation*}
 is known as `Chapman-Kolmogorov equation'. As seen for the stochastic timed automata with Poisson clock structure, also here it's possible to define a matrix collecting all the probabilities of the kind $P_{i,j}(s)$. Let's call this matrix $H(s)$:
 
 \bigskip\noindent
