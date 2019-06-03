@@ -14,11 +14,20 @@
 \usepackage[english]{babel} 
 \usepackage{float}
 \usepackage[left=2.5cm,right=2.5cm,bottom=2cm,top=2cm,includeheadfoot]{geometry}
+% Da scommentare per abilitare un ambiente Large
+% migliore rispetto al Large normale
+%\usepackage{environ}
+%\NewEnviron{BiggerEquation*}{%
+%\begin{equation*}
+%\scalebox{1.5}{$\BODY$}
+%\end{equation*}
+%}
 \linespread{1.2}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \newcommand*{\transp}{\mathsf{p}}
+
 
 \title{Automata \& Queueing Systems}
 \author{Francesco Casciola}
@@ -176,7 +185,7 @@ In real systems there might be a degree of uncertainty which must be accounted f
 \item $V$: The processing times can vary depending on the request, it’s not always possible to know them in advance.
 \end{itemize}
 The need to introduce elements of uncertainty in the model bring to the definition of the next kind of state automaton.
-\paragraph{Stochastic State Automaton}
+\paragraph{Stochastic Timed Automaton}
 It’s a model through which Discrete Event Systems with elements of uncertainty can be represented and it’s identified as a $6$-tuple $(\mathcal{E},\mathcal{X},\Gamma,P,p_0,F)$ where:
 \begin{itemize}
 \item $(\mathcal{E},\mathcal{X},\Gamma)$ are the same as for the timed automaton.
@@ -418,6 +427,7 @@ e'\neq e
 $$
 Where the $Y$ random variables are the residual lifetimes of the considered events. Since the residual lifetimes follow exponential distribution, it's possible to use the equation \ref{eq:xlessy} and the superposition property to proceed with the computation:
 \begin{equation}
+\label{eq:inxnextstateise}
 P\left(Y_{e,k} <
 \min_{\left[
 \begin{matrix}
@@ -565,7 +575,7 @@ $$
 \noindent
 So it's possible to redefine $P(X_{k+1} = x' \mid X_k = x)$ as the probability that the $k+1$-th state is $j$ as:
 $$
-P\left(X_{k+1}=j\right)=\sum_{i\in \mathcal{X}}
+P\left(X_{k+1}=j\right)=\sum_{\mathlarger{i\in \mathcal{X}}}
 {
 \underbrace{P\left(X_{k+1}=j  \mid  X_k=i\right)}_{(i,j)-\text{th}\text{ entry of }P_X}
 \underbrace{P\left(X_k=1\right)}_{i-th\text{ entry of }\Pi_X(k)}
@@ -600,7 +610,7 @@ $$
 \noindent
 Likewise, it's possible to obtain the same result for the events: 
 $$
-P\left(E_{k+1}=j\right)=\sum_{i\in\mathcal{X}}{P\left(E_{k+1}=j \mid X_k=i\right)P\left(X_k=i\right)}
+P\left(E_{k+1}=j\right)=\sum_{\mathlarger{i\in\mathcal{X}}}{P\left(E_{k+1}=j \mid X_k=i\right)P\left(X_k=i\right)}
 $$
 
 $$
@@ -619,113 +629,76 @@ $$
 \Pi_E(k+1)=\Pi_X(k)P_E=\Pi_X(0)P_X^kP_E
 $$
 With this result, it's finally possible to say that \emph{when using stochastic timed automata with Poisson clock structure, it's enough to know the matrices $P_X$ and $P_E$ and the vector $\Pi_X(0)$ to find all the future state and event probabilities}. 
-\paragraph{Distribution of State Holding Times} Let's consider the state $x$ of a stochastic timed automaton with Poisson clock structure. The state holding time $V(x)$ is a continuous random variable defined as the time spent by the system in the state $x$. Notice that, while the system is in state $x$, there might occur events which do not trigger a state transition: this implies that $V(x)$ keeps increasing until the system leaves state $x$.
+\paragraph{Distribution of State Holding Times}
+The state holding time $V(x)$ is a continuous random variable characterising the time spent by the system in the state $x$ (for a stochastic timed automaton with Poisson clock structure). Notice that, while the system is in state $x$, there might occur events which do not trigger a state transition: this implies that $V(x)$ keeps increasing until the system leaves state $x$.
 % TODO Meglio detto cosi?
 %, so $V(x)$ is a continuous random variable. Moreover, when computing a state holding time, it's fundamental to keep in mind the fact that, while the system is in state $x$, events can occur without causing a state transition and, therefore, without affecting the value of $V(x)$.
-
-\bigskip
-\noindent
-\textbf{Theorem}: 
-
-\noindent
-The State holding time $V(x)$ of the state $x$, in stochastic timed automata with Poisson clock structure, is exponentially distributed with rate:
-
+Let's compute the CDF of the state holding time and show that it is exponentially distributed with rate:
 $$
-\sum_{e\in\Gamma(x)}{\lambda_e
+\sum_{\mathlarger{e\in\Gamma(x)}}{\lambda_e
 \left[
-1-P\left(x \mid x,e\right)
+1-\transp\left(x \mid x,e\right)
 \right]
 }
 $$
-\newpage
-\noindent
 \emph{Proof:}
-
 \bigskip
 \noindent
-Let's start with the computation of the CDF of $V(x)$:
+The cdf of $V(x)$ is:
 $$
 P(V(x)\leq t) = 1-P(V(x)> t)
 $$
-Now let's consider only the term $P(V(x)> t)$:
-$$
-P(V(x)> t)=P\left(\textrm{\emph{ no state transitions in the time interval }}\left( 0,t\right] \mid X(0)=x\right)=
-$$
-$$
-=P\left(\underset{e\in\Gamma(x)}{\bigcap}\textrm{\emph{ no state transition triggered by event }}e
-\textrm{\emph{ in the time interval }}\left( 0,t\right]\hspace{3pt}|\hspace{3pt}X(0)=x\right)=
-\footnote[1]{Thanks to the independence of the events' lifetimes in Poisson clock structure}
-$$
-$$
-=\prod_{e\in\Gamma(x)}{
-P\left(\textrm{\emph{ no state transition triggered by event }}e\textrm{\emph{ in the time interval }}
-\left( 0,t\right] \mid X(0)=x\right)
-}=
-$$
-$$
-=\prod_{e\in\Gamma(x)}{
+For simplicity, consider $P(V(x) > t)$ only:
+\begin{equation*}
+\begin{split}
+&P(V(x)> t) = P\left(\textit{no state transitions over the }\left(0,t\right] \textit{ interval} \mid X(0)=x\right)= \\
+&=P\left(\underset{e\in\Gamma(x)}\bigcap\textit{no state transition triggered by event e over }\left( 0,t\right] \mid X(0)=x\right)=
+\footnote[1]{Thanks to the independence of the events' lifetimes in Poisson clock structure} \\
+&=\prod_{e\in\Gamma(x)}
+P\left(\textit{no state transition triggered by event e over }\left( 0,t\right] \mid X(0)=x\right)= \\
+&=\textit{it may occur more than once} = \\
+&=\prod_{e\in\Gamma(x)}
 P\left(
-\begin{matrix}
-\underset{n=0}{\overset{+\infty}{\bigcup}}
-\textrm{\emph{ event }}e\textrm{\emph{ occurs exactly }n\textrm{\emph{ times in }}}
-\left( 0,t\right]\textrm{\emph{ and}}\cr
-\textrm{\emph{ never triggers a state transition }}  \mid X(0)=x
-\end{matrix}
-\right)\overset{\textrm{union of}}{\underset{\textrm{disjoint events}}{=}}
-}
-$$
-$$
-=\prod_{e\in\Gamma(x)}{\sum_{n=0}^{+\infty}{
-P\left(
-\begin{matrix}
-\textrm{\emph{ event }}e\textrm{\emph{ occurs exactly }}n\textrm{\emph{ times in the interval }}\left( 0,t\right]\cr
-\textrm{\emph{ and never triggers a state transition }}  \mid X(0)=x
-\end{matrix}
-\right)}}=
-$$
-
-\bigskip\noindent
-In this last probability the occurrences of an \textit{i.i.d} set of exponentially distributed random variables are counted, which is equivalent to a Poisson counting process. Therefore, it's possible to use the equation $(2)$ 
-
-\begin{Large}
-$$
-=\prod_{e\in\Gamma(x)}{\sum_{n=0}^{+\infty}{
-\frac{\left(\lambda_e t\right)^{n}}{n!} e^{-\lambda_e t} P\left( x \mid x,e\right)^{n}}}
-=\prod_{e\in\Gamma(x)}{e^{-\lambda_e t}\sum_{n=0}^{+\infty}{
-\frac{\left[\lambda_e t\cdot P\left(x \mid x,e\right)\right]^n}{n!}
-}}=
-$$
-\end{Large}
-
-\medskip
+\begin{split}
+&\underset{n=0}{\overset{+\infty}\bigcup}
+\textit{event e occurs exactly n times over } \left(0,t\right] \\
+&\textit{and never triggers a state transition} \mid X(0)=x
+\end{split}
+\right)
+\overset{\textit{union of}}{\underset{\textit{disjoint events}}{=}} \\
+&=\prod_{e\in\Gamma(x)}\sum_{n=0}^{+\infty} P\left(
+\begin{split}
+&\textit{event e occurs exactly n times over } \left( 0,t\right]\\
+&\textit{and never triggers a state transition} \mid X(0)=x
+\end{split}
+\right)=
+\end{split}
+\end{equation*}
 \noindent
-The sum corresponds to the definition of the exponential: $e^x=\sum_{n=0}^{+\infty}{\frac{x^n}{n!}}$
-
-\begin{Large}
-$$
-=\prod_{e\in\Gamma(x)}{e^{-\lambda_e t}
-e^{\left[\lambda_e t\left(P\left(x \mid x,e\right)e\right)\right]}
-}
-=e^{\sum_{e\in\Gamma(x)}{\left(-\lambda_e
-\left[
-1-P\left(x \mid x,e\right)
-\right]t\right)
-}}
-$$
-\end{Large}
-
-\medskip\noindent
-So, finally we can obtain:
-\begin{Large}
-$$
-P\left(V(x)\leq t\right)=1-
-e^{\sum_{e\in\Gamma(x)}{\left(-\lambda_e
-\left[
-1-P\left(x \mid x,e\right)
-\right]t\right)
-}}
-$$
-\end{Large}
+In this last probability the occurrences of an \textit{i.i.d} set of exponentially distributed random variables are counted, which is equivalent to a Poisson counting process. Therefore, it's possible to use the equation \ref{eq:inxnextstateise} 
+\begin{equation*}
+\begin{split}
+&=\prod_{e\in\Gamma(x)}\sum_{n=0}^{+\infty}
+\frac{\left(\lambda_e t\right)^{n}}{n!} \cdot e^{-\lambda_e t} \cdot \transp\left( x \mid x,e\right)^{n} = \\
+&=\prod_{e\in\Gamma(x)}e^{-\lambda_e t}\sum_{n=0}^{+\infty} \frac{\left[(\lambda_e t)\cdot \transp (x \mid x,e)\right]^n}{n!}
+=
+\end{split}
+\end{equation*}
+\noindent
+Now the last sum can be rewritten as $e^x=\sum_{n=0}^{+\infty}x^n/n!$ (definition of the exponential):
+\begin{equation*}
+\begin{split}
+&=\prod_{e\in\Gamma(x)}\exp(-\lambda_e t) \cdot
+\exp(\lambda_e t \cdot \transp\left(x \mid x,e\right))= \\
+&=\prod_{e\in\Gamma(x)}\exp(-\lambda_e \left[1 - \transp(x \mid x,e)\right] t)= \\
+&= \exp\left(- \sum_{e\in\Gamma(x)} \lambda_e \left[1 - \transp(x \mid x,e)\right] t\right)
+\end{split}
+\end{equation*}
+\noindent
+Switching to the complement of $P(V(x)) > t$ is straightforward, thus:
+\begin{equation*}
+P\left(V(x)\leq t\right)=1- \exp\left(- \sum_{e\in\Gamma(x)} \lambda_e \left[1 - \transp(x \mid x,e)\right] t\right)
+\end{equation*}
 \begin{flushright}
 $\blacksquare$
 \end{flushright}
