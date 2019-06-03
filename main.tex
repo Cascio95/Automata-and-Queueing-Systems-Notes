@@ -382,9 +382,11 @@ P\left(N_e(t,t+s)=n\right)& = \frac{(\lambda s)^n}{n!}e^{-\lambda s}
 \end{split}
 \end{equation*}
 Quite evidently, the pmf depends only on $s$ (due to the memoryless property), so:
-$$
+\begin{equation}
+\label{eq:poissonCountingDef}
 P\left(N_e(s)=n\right) = \frac{(\lambda s)^n}{n!}e^{-\lambda s}
-$$
+\end{equation}
+
 \noindent
 %From the PMF definition we can also reach the following result. Given $n$ \textit{i.i.d.} interarrival times $T_1,T_2,\dots,T_n \sim Exp\left(\frac{1}{\lambda}\right)$, $\lambda>0$:
 %$$
@@ -425,7 +427,7 @@ e'\neq e
 \right]}
 \left\lbrace Y_{e',k}\right\rbrace \right)
 $$
-Where the $Y$ random variables are the residual lifetimes of the considered events. Since the residual lifetimes follow exponential distribution, it's possible to use the equation \ref{eq:xlessy} and the superposition property to proceed with the computation:
+Where the $Y$ random variables are the residual lifetimes of the feasible events in state $x$. Since the residual lifetimes follow exponential distribution, it's possible to use the equation \ref{eq:xlessy} and the superposition property to proceed with the computation:
 \begin{equation}
 \label{eq:inxnextstateise}
 P\left(Y_{e,k} <
@@ -615,10 +617,10 @@ $$
 \Pi_E(k)=
 \left[
 \begin{matrix}
-P\left(E_K=1\right),&
-P\left(E_K=2\right),&
+P\left(E_k=1\right),&
+P\left(E_k=2\right),&
 \dots,&
-P\left(E_K=m\right)
+P\left(E_k=m\right)
 \end{matrix}
 \right]
 $$
@@ -628,14 +630,11 @@ $$
 $$
 With this result, it's finally possible to say that \emph{when using stochastic timed automata with Poisson clock structure, it's enough to know the matrices $P_X$ and $P_E$ and the vector $\Pi_X(0)$ to find all the future state and event probabilities}. 
 \paragraph{Distribution of State Holding Times}
-The state holding time $V(x)$ is a continuous random variable characterising the time spent by the system in the state $x$. Notice that, while the system is in state $x$, there might occur events which do not trigger a state transition: this implies that $V(x)$ keeps increasing until the system leaves state $x$.
+The state holding time $V(x)$ is a continuous random variable characterising the time spent by the system in state $x$. Notice that, while the system is in state $x$, there might occur events which do not trigger a state transition: this implies that $V(x)$ keeps increasing until the system leaves state $x$.
 Let's compute the CDF of the state holding time, for a stochastic timed automaton with Poisson clock structure, and show that it is exponentially distributed with rate:
 $$
-\sum_{\mathlarger{e\in\Gamma(x)}}{\lambda_e
-\left[
-1-\transp\left(x \mid x,e\right)
-\right]
-}
+\sum_{\mathlarger{e\in\Gamma(x)}}\lambda_e \left[
+1-\transp\left(x \mid x,e\right) \right]
 $$
 \emph{Proof:}
 \bigskip
@@ -644,7 +643,7 @@ The cdf of $V(x)$ is:
 $$
 P(V(x)\leq t) = 1-P(V(x)> t)
 $$
-For simplicity, consider $P(V(x) > t)$ only:
+Consider $P(V(x) > t)$ only:
 \begin{equation*}
 \begin{aligned}
 &P(V(x)> t) = P\left(\textit{no state transitions over the }\left(0,t\right] \textit{ interval} \mid X(0)=x\right)= \\
@@ -672,7 +671,7 @@ P\left(
 \stepcounter{footnote}\footnotetext{Union of disjoint events, you may sum them up}
 \end{equation*}
 \noindent
-In this last probability the occurrences of an \textit{i.i.d} set of exponentially distributed random variables are counted, which is equivalent to a Poisson counting process. Therefore, it's possible to use the equation \ref{eq:inxnextstateise} 
+In this last probability the occurrences of an \textit{i.i.d} set of exponentially distributed random variables are counted, which is equivalent to a Poisson counting process. Therefore, it's possible to substitute equation \ref{eq:poissonCountingDef} and multiply it by the probability that the system remains in $x$, given event $e$, exactly $n$ times:
 \begin{equation*}
 \begin{split}
 &=\prod_{e\in\Gamma(x)}\sum_{n=0}^{+\infty}
@@ -682,7 +681,7 @@ In this last probability the occurrences of an \textit{i.i.d} set of exponential
 \end{split}
 \end{equation*}
 \noindent
-Now the last sum can be rewritten as $e^x=\sum_{n=0}^{+\infty}x^n/n!$ (definition of the exponential):
+Now the last sum can be rewritten as $e^x=\sum_{n=0}^{+\infty}x^n/n!$ (Maclaurin series expansion):
 \begin{equation*}
 \begin{split}
 &=\prod_{e\in\Gamma(x)}\exp(-\lambda_e t) \cdot
@@ -692,7 +691,7 @@ Now the last sum can be rewritten as $e^x=\sum_{n=0}^{+\infty}x^n/n!$ (definitio
 \end{split}
 \end{equation*}
 \noindent
-Switching to the complement of $P(V(x)) > t$ is straightforward, thus:
+Switching to the cdf of interest is straightforward (namely, the complement of $P(V(x)) > t$), thus:
 \begin{equation*}
 P\left(V(x)\leq t\right)=1- \exp\left(- \sum_{e\in\Gamma(x)} \lambda_e \left[1 - \transp(x \mid x,e)\right] t\right)
 \end{equation*}
