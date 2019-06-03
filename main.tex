@@ -28,7 +28,6 @@
 \DeclareMathOperator*{\argmin}{arg\,min}
 \newcommand*{\transp}{\mathsf{p}}
 
-
 \title{Automata \& Queueing Systems}
 \author{Francesco Casciola}
 \begin{document}
@@ -202,7 +201,7 @@ $$
 This set of probabilities generalises the deterministic case, in fact if we have:
 $$
 \begin{matrix}
-x'=f(x,e)&&\Rightarrow && P(x'\hspace{5pt}|\hspace{5pt}x,e)=1
+x'=f(x,e)&&\Rightarrow && P(x' \mid x,e)=1
 \end{matrix}
 $$
 \item $\transp_0$ is a discrete random variable which defines the initial state probabilities:
@@ -338,8 +337,9 @@ $\blacksquare$
 \end{flushright}
 \end{itemize}
 % TODO c'è da aggiustare s con t; in alcuni punti manca s o t, o sono scambiati
+\newpage
+\noindent
 In addition to these properties, a `useful computation' (for the next topics) will be executed. Given two exponentially distributed random variables $X\sim Exp\left(\frac{1}{\lambda}\right),Y\sim Exp\left(\frac{1}{\mu}\right)$, let's compute the probability $P(X \leq Y+s)$:
-\\\bigskip
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.5\textwidth]{IMG/CommArea2.eps}
@@ -582,8 +582,6 @@ P\left(X_{k+1}=j\right)=\sum_{\mathlarger{i\in \mathcal{X}}}
 }
 $$ 
 $P(X_{k+1} = j)$ will be the $j$-th entry of the vector $\Pi_X(k+1)$ and of the product $\Pi_X(k) \cdot P_X$. 
-\newpage
-\noindent
 So assuming that $\Pi_X(0)$ is known:
 $$
 \Pi_X(0)=
@@ -602,7 +600,7 @@ $$
 \Pi_X(2)&=&\Pi_X(1) \cdot P_X&=&\Pi_X(0) \cdot P_X^2\\
 \Pi_X(3)&=&\Pi_X(2) \cdot P_X&=&\Pi_X(0) \cdot P_X^3\\
 &&\vdots\\
-\Pi_X(k)&=&\Pi_X(k-1) \cdot P_X&=&\Pi_X(0)P_X^k
+\Pi_X(k+1)&=&\Pi_X(k) \cdot P_X&=&\Pi_X(0)P_X^k
 \end{matrix}
 $$
 
@@ -630,10 +628,8 @@ $$
 $$
 With this result, it's finally possible to say that \emph{when using stochastic timed automata with Poisson clock structure, it's enough to know the matrices $P_X$ and $P_E$ and the vector $\Pi_X(0)$ to find all the future state and event probabilities}. 
 \paragraph{Distribution of State Holding Times}
-The state holding time $V(x)$ is a continuous random variable characterising the time spent by the system in the state $x$ (for a stochastic timed automaton with Poisson clock structure). Notice that, while the system is in state $x$, there might occur events which do not trigger a state transition: this implies that $V(x)$ keeps increasing until the system leaves state $x$.
-% TODO Meglio detto cosi?
-%, so $V(x)$ is a continuous random variable. Moreover, when computing a state holding time, it's fundamental to keep in mind the fact that, while the system is in state $x$, events can occur without causing a state transition and, therefore, without affecting the value of $V(x)$.
-Let's compute the CDF of the state holding time and show that it is exponentially distributed with rate:
+The state holding time $V(x)$ is a continuous random variable characterising the time spent by the system in the state $x$. Notice that, while the system is in state $x$, there might occur events which do not trigger a state transition: this implies that $V(x)$ keeps increasing until the system leaves state $x$.
+Let's compute the CDF of the state holding time, for a stochastic timed automaton with Poisson clock structure, and show that it is exponentially distributed with rate:
 $$
 \sum_{\mathlarger{e\in\Gamma(x)}}{\lambda_e
 \left[
@@ -650,29 +646,30 @@ P(V(x)\leq t) = 1-P(V(x)> t)
 $$
 For simplicity, consider $P(V(x) > t)$ only:
 \begin{equation*}
-\begin{split}
+\begin{aligned}
 &P(V(x)> t) = P\left(\textit{no state transitions over the }\left(0,t\right] \textit{ interval} \mid X(0)=x\right)= \\
-&=P\left(\underset{e\in\Gamma(x)}\bigcap\textit{no state transition triggered by event e over }\left( 0,t\right] \mid X(0)=x\right)=
-\footnote[1]{Thanks to the independence of the events' lifetimes in Poisson clock structure} \\
+&=P\left(\underset{e\in\Gamma(x)}\bigcap\textit{no state transition triggered by event e over }\left( 0,t\right] \mid X(0)=x\right)=\footnotemark \\
 &=\prod_{e\in\Gamma(x)}
-P\left(\textit{no state transition triggered by event e over }\left( 0,t\right] \mid X(0)=x\right)= \\
-&=\textit{it may occur more than once} = \\
+P\left(\textit{no state transition triggered by event e over }\left( 0,t\right] \mid X(0)=x\right)=\footnotemark \\
 &=\prod_{e\in\Gamma(x)}
 P\left(
-\begin{split}
+\begin{aligned}
 &\underset{n=0}{\overset{+\infty}\bigcup}
 \textit{event e occurs exactly n times over } \left(0,t\right] \\
 &\textit{and never triggers a state transition} \mid X(0)=x
-\end{split}
-\right)
-\overset{\textit{union of}}{\underset{\textit{disjoint events}}{=}} \\
+\end{aligned}
+\right) =\footnotemark \\
 &=\prod_{e\in\Gamma(x)}\sum_{n=0}^{+\infty} P\left(
-\begin{split}
+\begin{aligned}
 &\textit{event e occurs exactly n times over } \left( 0,t\right]\\
 &\textit{and never triggers a state transition} \mid X(0)=x
-\end{split}
+\end{aligned}
 \right)=
-\end{split}
+\end{aligned}
+\addtocounter{footnote}{-3} %1=n
+\stepcounter{footnote}\footnotetext{Thanks to the independence of the events' lifetimes in Poisson clock structure}
+\stepcounter{footnote}\footnotetext{It may occur more than once}
+\stepcounter{footnote}\footnotetext{Union of disjoint events, you may sum them up}
 \end{equation*}
 \noindent
 In this last probability the occurrences of an \textit{i.i.d} set of exponentially distributed random variables are counted, which is equivalent to a Poisson counting process. Therefore, it's possible to use the equation \ref{eq:inxnextstateise} 
