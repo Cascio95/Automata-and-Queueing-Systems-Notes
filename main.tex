@@ -5,6 +5,9 @@
 \usepackage{microtype}
 \usepackage{mathtools}
 \usepackage{amssymb,amsmath}
+% Aumenta lo spacing tra equazioni su più righe
+% nell'ambiente equation, rendendolo scalabile in base alla dimensione del testo
+\setlength{\jot}{3ex}
 \usepackage{relsize}
 \usepackage{tikz}
 \usetikzlibrary{automata,positioning,calc,shapes,arrows}
@@ -16,12 +19,12 @@
 \usepackage[left=2.5cm,right=2.5cm,bottom=2cm,top=2cm,includeheadfoot]{geometry}
 % Da scommentare per abilitare un ambiente Large
 % migliore rispetto al Large normale
-\usepackage{environ}
-\NewEnviron{BiggerEquation*}{%
-\begin{equation*}
-\scalebox{1.5}{$\BODY$}
-\end{equation*}
-}
+%\usepackage{environ}
+%\NewEnviron{BiggerEquation*}{%
+%\begin{equation*}
+%\scalebox{1.5}{$\BODY$}
+%\end{equation*}
+%}
 \linespread{1.2}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -69,10 +72,6 @@ Don't confuse the model with the actual system because models introduce a certai
 e_k &\in \Gamma (x_{k-1}), \quad k = 1,2,\dots,n \\ 
 x_k &= f(x_{k-1},e_k)
 \end{align*}
-% TODO Sostituire con align?
-%$$
-%(e_1,e_2,\dots,e_n ) \hspace{0.5cm} \text{is %feasible if: } e_k \in \Gamma (x_{k-1}) %\hspace{0.5cm} , \hspace{0.5cm} k\in (1,2,\dots,n) %\hspace{0.5cm} , \hspace{0.5cm} x_k=f(x_{k-1},e_k )
-%$$
 Unfeasible sequences aren’t always obvious, which means that to find some of them it’s either necessary to have a deep knowledge of the system or to run a huge amount of model simulations (assuming that it’s realistic enough) to detect them.
 
 \paragraph{State Automaton with outputs} It’s a model through which Discrete Event Systems can be represented and it’s identified as a 7-tuple $(\mathcal{E},\mathcal{X},\Gamma,f,x_0,\mathcal{Y},g)$ where:
@@ -189,12 +188,6 @@ It’s a model through which Discrete Event Systems with elements of uncertainty
 \begin{itemize}
 \item $(\mathcal{E},\mathcal{X},\Gamma)$ are the same as for the timed automaton.
 \item $\transp$ is a set of transition probabilities from a state to another. It substitutes $f$ and it’s defined as follows:
-%$$
-%\begin{matrix}
-%P(x'|x,e)=P(\mathcal{X}_{k+1}=x' \hspace{4pt}|\hspace{4pt} \mathcal{X}_k=x ; \mathcal{E}_(k+1)=e )&&,&&\forall x,x'\in\mathcal{X} &&,&& \forall \mathcal{E}\in \Gamma(x) 
-%\end{matrix}
-%$$
-% TODO Sostituire \begin matrix con questo in basso?
 $$
 \transp(x' \mid x,e) = P\left(X_{k+1} = x' \mid X_k = x, \, E_{k+1} = e\right), \qquad \forall e \in \Gamma(x) , \quad \forall x,x' \in \mathcal{X}
 $$
@@ -205,22 +198,10 @@ x'=f(x,e)&&\Rightarrow && P(x' \mid x,e)=1
 \end{matrix}
 $$
 \item $\transp_0$ is a discrete random variable which defines the initial state probabilities:
-%$$
-%\begin{matrix}
-%p_0(x)=P(x_0 \geq x) && , && \forall x\in \mathcal{X}
-%\end{matrix}
-%$$
-% TODO 
 $$
 \transp_0(x)=P(x_0 = x), \quad \forall x\in \mathcal{X}
 $$
 \item $F$ is the stochastic clock structure and $F_e$ are the cumulative distribution functions of the lifetimes of event $e$:
-% TODO
-%$$
-%\begin{matrix}
-%F={F_e :e \in \mathcal{E}} && ; && F_e=P(V_{e,i} \leq t)
-%\end{matrix}
-%$$
 $$
 F = \{F_e : e \in \mathcal{E}\}, \quad F_e(t) = P(V_{e,i} \leq t)
 $$
@@ -336,7 +317,6 @@ Where $\lambda' = \sum_{i=1}^{n}{\lambda_i}$.
 $\blacksquare$
 \end{flushright}
 \end{itemize}
-% TODO c'è da aggiustare s con t; in alcuni punti manca s o t, o sono scambiati
 \newpage
 \noindent
 In addition to these properties, a `useful computation' (for the next topics) will be executed. Given two exponentially distributed random variables $X\sim Exp\left(\frac{1}{\lambda}\right),Y\sim Exp\left(\frac{1}{\mu}\right)$, let's compute the probability $P(X \leq Y+s)$:
@@ -441,29 +421,6 @@ e'\neq e
 =\frac{\lambda_e}{\lambda_e+(\Lambda(x)-\lambda_e)}=\frac{\lambda_e}{\Lambda(x)}
 \end{equation}
 \noindent
-% TODO forse è meglio essere sintetici
-%Where $\Lambda(x)$ comes from $\min_{\dots}\left\lbrace Y_{e',k}\right\rbrace \sim Exp\left(1/\left(\Lambda(x) - \lambda_e\right)\right)$. $\Lambda(x)$ was inserted in order to ease the computation and it's defined as:
-%$$
-%\Lambda(x)=\sum_{e \in \Gamma (x)}{\lambda_e}
-%$$
-%So, by defining $\Lambda(x)$ as the sum of the rates of all the possible events, it's possible to obtain:
-%$$
-%\min_{\left[
-%\begin{matrix}
-%e'\in \Gamma(x) \\
-%e'\neq e
-%\end{matrix}\right]
-%}{\left\lbrace Y_{e',k}\right\rbrace }) \sim Exp\left(\frac{1}{\underset{{\left[
-%\begin{matrix}
-%e'\in \Gamma(x) \\
-%e'\neq e
-%\end{matrix}\right]
-%}}{\sum
-%}\lambda_e'}\right)
-%\triangleq
-%Exp \left(\frac{1}{\Lambda(x)-\lambda_e}\right)
-%$$
-%Which is the passage that makes possible to reach the last result of $(3)$.
 Where $(\Lambda(x)-\lambda_e)$ is the rate of $Y_{e',k}$ since $\Lambda(x)$ is the sum of the rates of all the feasible events $e \neq e'$:
 $$
 \Lambda(x) = \mathlarger{\sum_{e \in \Gamma(x)}\lambda_e}
@@ -509,8 +466,6 @@ These two results are quite good, but there are still more things that can be do
 $\mathcal{E}=\left\lbrace 1,2,\dots,m \right\rbrace$ and 
 $\mathcal{X}=\left\lbrace 1,2,\dots,n \right\rbrace$
 it's possible to define the following matrices and vector:
-
-\bigskip
 $$
 P_E=
 \left[
@@ -534,7 +489,6 @@ P\left(E_{k+1}=m  \mid  X_k=n\right)
 \end{matrix}
 \right]
 $$
-
 \bigskip
 $$
 P_X=
@@ -559,7 +513,6 @@ P\left(X_{k+1}=n  \mid  X_k=n\right)
 \end{matrix}
 \right]
 $$
-
 \bigskip
 $$
 \Pi_X(k)=
@@ -572,7 +525,6 @@ P(X_k=n)&
 \end{matrix}
 \right]
 $$
-
 \bigskip
 \noindent
 So it's possible to redefine $P(X_{k+1} = x' \mid X_k = x)$ as the probability that the $k+1$-th state is $j$ as:
@@ -605,9 +557,6 @@ $$
 \Pi_X(k+1)&=&\Pi_X(k) \cdot P_X&=&\Pi_X(0)P_X^k
 \end{matrix}
 $$
-
-\bigskip
-\noindent
 Likewise, it's possible to obtain the same result for the events: 
 $$
 P\left(E_{k+1}=j\right)=\sum_{\mathlarger{i\in\mathcal{X}}}{P\left(E_{k+1}=j \mid X_k=i\right)P\left(X_k=i\right)}
@@ -637,8 +586,6 @@ $$
 1-\transp\left(x \mid x,e\right) \right]
 $$
 \emph{Proof:}
-\bigskip
-\noindent
 The cdf of $V(x)$ is:
 $$
 P(V(x)\leq t) = 1-P(V(x)> t)
@@ -705,7 +652,7 @@ An example of a stochastic process was already proposed when talking about `Pois
 of random variables indexed by a time index $t\in T$'}, where $T$ is a time interval which can be either discrete or continuous.
 The stochastic processes are actually classified depending on the nature of $T$:
 \begin{itemize}
-\item \textbf{if $T$ is discrete} the process is a \emph{`discrete time stochastic process'} 
+\item \textbf{if $T$ is discrete} (either finite or not) the process is a \emph{`discrete time stochastic process'} 
 and it's also called \emph{`chain'}.
 \item \textbf{if $T$ is continuous} the process is a \emph{`continuous time stochastic process'}.
 \end{itemize}
@@ -739,7 +686,7 @@ The Continuous Time Homogeneous Markov Chains is a stochastic process with the f
 \begin{itemize}
 \item $T=\mathbb{R}^+\Rightarrow\left\lbrace t\in\mathbb{R}:\;t\geq 0\right\rbrace $ (\textbf{Continuous Time}).
 \item $X(t)\in \mathcal{X}=\left\lbrace 1,2,\dots\right\rbrace$ (\textbf{Chain}).
-\item \textbf{Markov property}.
+\item \textbf{Markov property} since it is a chain.
 \item \textbf{Homogeneity}: the transition function depends only on the prediction horizon
 $$
 P\left(X(t+s)=j \mid X(t)=i\right) = P\left(X(t'+s)=j \mid X(t')=i\right),\;\forall t\neq t'
@@ -754,7 +701,7 @@ Please notice that $x(t)\in \mathcal{X}$ implies that the process' random variab
 $$
 \transp_{i,j}(s) = P\left(X(t+s)=j \mid X(t)=i\right)
 $$
-\begin{figure}[H]
+\begin{figure}
 \begin{center}
 \includegraphics[width=0.35\textwidth]{IMG/CTHMC1.eps}
 \caption{At time $t$ the current state is $i$. At $t+s$ the next state is $j$, while at $t+u$ the state is $r \in \mathcal{X}$ which can be $i$, $j$ or any other state.}
@@ -775,110 +722,78 @@ In order to execute the computation, let's consider the case in Figure \ref{fig:
 \end{equation*}
 \noindent
 The equality:
-\begin{BiggerEquation*}
-\transp_{i,j}(s) = \sum_{r\in \mathcal{X}}P_{i,r}(u)\cdot P_{r,j}(s-u)
-\end{BiggerEquation*}
-is known as `Chapman-Kolmogorov equation'. As seen for the stochastic timed automata with Poisson clock structure, also here it's possible to define a matrix collecting all the probabilities of the kind $P_{i,j}(s)$. Let's call this matrix $H(s)$:
-
-\bigskip\noindent
+\begin{equation}
+\label{eq:chapmanKDef}
+\transp_{i,j}(s) = \sum_{r\in \mathcal{X}}\transp_{i,r}(u)\cdot \transp_{r,j}(s-u)
+\end{equation}
+is known as `Chapman-Kolmogorov equation'. As seen for the stochastic timed automata with Poisson clock structure, also here it's possible to define a matrix for the transition probabilities $\transp_{i,j}(s)$. Let's call this matrix $H(s)$:
 $$
 H(s)=\left[
 \begin{matrix}
-P_{1,1}(s)&P_{1,2}(s)&\cdots\cr
-P_{2,1}(s)&P_{2,2}(s)&\cdots\cr
+\transp_{1,1}(s)&\transp_{1,2}(s)&\cdots \\
+\transp_{2,1}(s)&\transp_{2,2}(s)&\cdots \\
 \vdots&\vdots&\ddots
 \end{matrix}
 \right]
 $$
-
-\bigskip\noindent
 This matrix has some important properties:
 \begin{enumerate}
-\item Since all the elements of the $H(s)$ are probabilities, the matrix it's structured in such a way that the sum of all the elements in a row is always $1$.
-\item As a result of the previous property, the probability that after a time $s=0$ the state hasn't changed is $1$, therefore:
+\item The sum of the elements along any row of $H(s)$ is 1.
+\item As a result of the previous property, if $s=0$ then the probability that the state does not change is 1, therefore $\transp_{i,i} = 1$ and $\transp_{i,j} = 0, \; j \neq i$:
 $$
 H(0)=I
 $$
-\item Since for the Chapman-Kolmogorov equation $(4)$ refers to $P_{i,j}(s)$ which is the generic element of the matrix $H(s)$, it's possible to define the equation $(4)$ also for the matrix:
+\item Since $\transp_{i,j}(s)$ is the generic element of matrix $H(s)$, from Equation \ref{eq:chapmanKDef} one notices that $H(s)$ equals the matrices product $H(u)$ by $H(s-u)$ (matrix form of the Chapman-Kolmogorov equation):
 $$
-H(s)=H(u)H(s-u)
+H(s)=H(u) \cdot H(s-u)
 $$
-\newpage
-\item From the last property it's possible to find the derivative of $H(s)$:
+\end{enumerate}
+From the last property it's possible to define the derivative of $H(s)$:
 $$
-\frac{dH(s)}{ds}=H(s)Q\hspace{10pt},\hspace{10pt}Q\triangleq\lim_{ds\rightarrow 0}\frac{H(ds)-I}{ds}
+\frac{dH(s)}{ds}=H(s) \cdot Q, \quad Q\triangleq\lim_{ds\rightarrow 0}\frac{H(ds)-I}{ds}
 $$
-
-\noindent
 \emph{Proof}:
-
+We would like to obtain the difference quotient. Let's consider an infinitesimal difference $ds$:
+\begin{equation*}
+\begin{aligned}
+&H(s+ds)=H(s)H(ds)= \footnotemark \\ &\frac{H(s+ds)-H(s)}{ds}=\frac{H(s)H(ds)-H(s)}{ds}
+\end{aligned}
+\footnotetext{By subtracting H(s) from both sides and dividing by ds}
+\end{equation*}
+Taking the limit for $ds\rightarrow 0$ yields the difference quotient on the left-hand side:
+\begin{equation*}
+\begin{aligned}
+\lim_{ds\rightarrow 0}\frac{H(s+ds)-H(s)}{ds} = \lim_{ds\rightarrow 0}\frac{H(s)H(ds)-H(ds)}{ds}
+\end{aligned}
+\end{equation*}
+Thus:
 $$
-H(s+ds)=H(s)H(ds)\hspace{10pt}\overset{\textrm{subtracting both the sides for}}
-{\underset{H(s) \textrm{ and dividing them for }ds}{\Rightarrow}}
+\frac{dH(s)}{ds}=H(s) \cdot \lim_{ds\rightarrow 0}{\frac{H(ds)-I}{ds}}
 $$
-
-\medskip
+The right-hand side limit has an indeterminate form $0/0$ since $H(0)=I$, then $(I-I)/ds = 0/0$. Let's \textit{assume that the limit exists} and let's call it $Q$. Since all the elements involved in the limit are matrices, also $Q$ will be a matrix (moreover, matrix $Q$ can be estimated on the field by performing measurements on the system). Finally, taking into account property $\#2$ it's possible to define the following Cauchy problem:
 $$
-\Rightarrow
-\frac{H(s+ds)-H(s)}{ds}=\frac{H(s)H(ds)-H(s)}{ds}
-$$
-
-\medskip
-Taking the limit for $ds\rightarrow 0$ of both the sides of the equation:
-
-$$
-\lim_{ds\rightarrow 0}{\frac{H(s+ds)+H(s)}{ds}}=
-\lim_{ds\rightarrow 0}{\frac{H(s)+H(ds)}{ds}} \Rightarrow
-$$
-
-\medskip
-$$
-\Rightarrow
-\frac{dH(s)}{ds}=H(s)\lim_{ds\rightarrow 0}{\frac{H(ds)-I}{ds}}
-$$
-
-\medskip
-The right side limit has an indeterminate form. Let's assume that the limit exists and let's call it $Q$. Since the all the elements involved in the limit are matrices, also $Q$ will be a matrix. Considering also property $\#2$ it's possible to write the following Cauchy problem:
-
-\begin{Large}
-$$
-\begin{matrix}
 \begin{cases}
-\frac{dH(s)}{ds}=H(s)Q\\
-H(0)=I \\
+\mathlarger{\frac{dH(s)}{ds}}=H(s) \cdot Q\\ 
+H(0)=I
 \end{cases}
-\end{matrix}
 $$
-\end{Large}
-
-\noindent 
 Whose solution is:
 $$
-H(s)=e^{Qs}\hspace{10pt},\hspace{10pt}e^{Qs}=\sum_{n=0}^{+\infty}{\frac{\left( Qs\right)^n}{n!}}
+H(s)=e^{Qs}, \quad e^{Qs}=\sum_{n=0}^{+\infty}{\frac{(Q \cdot s)^n}{n!}}
 $$ 
-Where $e^{Qs}$ is a matrix exponential. Finally it's also possible to check if $Q$ actually exists:
-$$
-\lim_{ds\rightarrow 0}{\frac{H(ds)-I}{ds}}\hspace{10pt}=
-\hspace{10pt}\lim_{ds\rightarrow 0}{\frac{e^{Qds}-I}{ds}}
-\hspace{10pt}
-\overset{\textrm{Taylor}}{\underset{1^{st}\textrm{ order}}{=}}
-\hspace{10pt}
-\lim_{ds\rightarrow 0}{\frac{(I+Qds+o(ds))-I}{ds}}\hspace{10pt}=
-$$
-
-\medskip
-$$
-=\lim_{ds\rightarrow 0}{\frac{Qds}{ds}+\frac{o(ds)}{ds}}=Q
-$$
-
-\medskip
-Which means that the result is consistent with the solution found by solving the Cauchy problem.
-\hspace{373pt}$\blacksquare$
-\end{enumerate}
-
+Where $e^{Qs}$ is the matrix exponential. Now we need to validate our initial assumption on the existence of $Q$:
+\begin{equation*}
+\begin{aligned}
+&\lim_{ds\rightarrow 0}\frac{H(ds)-I}{ds} = \lim_{ds\rightarrow 0}\frac{e^{Qds}-I}{ds}\overset{\text{Taylor}}{\underset{1^{st}\text{ order}}{=}} \\
+&\lim_{ds\rightarrow 0}\frac{(I+Qds+o(ds))-I}{ds}=\lim_{ds\rightarrow 0}\frac{Qds}{ds}+\frac{o(ds)}{ds} = Q
+\end{aligned}
+\end{equation*}
+Which means that the result is consistent with the initial assumption.
+\begin{flushright}
+$\blacksquare$
+\end{flushright}
 \newpage
 \subsection{The Q Matrix}
-
 From the previous proof, it's hard to obtain any direct information about $Q$, so this section will be dedicated to the properties of the $Q$ matrix. To start with, this matrix is called `\emph{Transition Rate Matrix}':
 $$
 Q=\left[
