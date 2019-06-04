@@ -9,6 +9,7 @@
 % nell'ambiente equation, rendendolo scalabile in base alla dimensione del testo
 \setlength{\jot}{3ex}
 \usepackage[makeroom]{cancel}
+\usepackage{siunitx}
 \usepackage{relsize}
 \usepackage{tikz}
 \usetikzlibrary{automata,positioning,calc,shapes,arrows}
@@ -809,8 +810,8 @@ q_{2,1} & q_{2,2} &  \cdots \cr
 \end{matrix}
 \right]
 $$
-where the generic element $q_{i,j}$ is called transition rate. Since the need of defining $Q$ came from the computation of the derivative of the matrix $H$, the properties of $H$ have been used to define the ones of $Q$. Let's start from the property of $H$ about the sum along any row being always $1$. Said $\textrm{\underline{\textbf{1}}}$ 
-the vector $\left(1,1,1,\dots,1\right)^T$:
+where the generic element $q_{i,j}$ is called transition rate (their dimension is \si{\per\second}). Since the need of defining $Q$ came from the computation of the derivative of the matrix $H$, the properties of $H$ have been used to define the ones of $Q$. Let's start from the property of $H$ about the sum along any row being always $1$. Said $\textrm{\underline{\textbf{1}}}$ 
+the vector $(1,1,1,\dots,1)^T$:
 $$
 H(s)\cdot \textrm{\underline{\textbf{1}}} = \textrm{\underline{\textbf{1}}}
 \hspace{15pt}
@@ -838,7 +839,7 @@ $$
 Where $O$ is the vector $\left(0,0,0,\dots,0\right)$. From this final result it's clear that:
 
 \bigskip\noindent
-\underline{\emph{The sum along every row of $Q$ is always $0$.}} \hspace{232pt} $(\star )$
+\underline{\emph{The sum along every row of $Q$ is always $0$.}} $\quad(\star )$
 
 \bigskip\noindent
 This property has an important implication: 
@@ -858,9 +859,9 @@ $$
 So, reducing this last equation to the coefficients of the matrices involved, the result will be 
 (always under the condition $ds\rightarrow 0$):
 $$
-P_{i,j}(ds)=q_{i,j}ds+o(ds)
+\transp_{i,j}(ds)=q_{i,j}ds+o(ds)
 $$
-Looking at the equation it's clear that \underline{\emph{all the $q_{i,j}$ with $i\neq j$ are non-negative}}, since $P_{i,j}(s)\geq 0$ (being a probability), $ds\geq 0$ (as it represents time, which cannot be negative) and $o(ds)$ goes to zero with $ds\rightarrow 0$. 
+Looking at the equation it's clear that \underline{\emph{all the $q_{i,j}$ with $i\neq j$ are non-negative}}, since $\transp_{i,j}(s)\geq 0$ (being a probability), $ds\geq 0$ (as it represents time, which cannot be negative) and $o(ds)$ goes to zero with $ds\rightarrow 0$. 
 \newpage
 \noindent
 The non-negativity of $q_{i,j}$ and the property $(\star )$, impose that:
@@ -885,14 +886,14 @@ $$
 p_{i,j}=-\frac{q_{i,j}}{q_{i,i}}
 $$
 \end{itemize}
-Let's start by computing the CDF of the state holding time of the generic state $i$, in order to provide proof for the statement done about elements in the main diagonal:
+Let's start by computing the CDF of the state holding time of the generic state $i$, in order to provide a proof for the statement done about elements on the main diagonal:
 $$
 F_i(t)\hspace{5pt}\triangleq\hspace{5pt}
 P\left( V(i)\leq t \right)
 $$
-And let's consider a small increment $dt$ of $t$ such that a state transition (only one) occurs in the time interval $[t,t+dt]$:
+And let's consider a small increment $dt$ of $t$ such that a state transition (only one) occurs in the time interval $(t,t+dt]$:
 $$
-F_i(t-dt)-F_i(t)\hspace{5pt}=\hspace{5pt}
+F_i(t+dt)-F_i(t)\hspace{5pt}=\hspace{5pt}
 P\left( t < V(i) \leq t+dt\right)\hspace{5pt}=\hspace{5pt}
 P\left(V(i) \leq t+dt \mid  V(i)>t \right)\cdot 
 \underbrace{P\left(V(i)>t\right)}_{1-F_i(t)}
@@ -901,7 +902,7 @@ $$
 \overset{\textrm{in particular}}{\Rightarrow}\hspace{10pt}
 P\left(V(i) \leq t+dt \mid  V(i)>t \right)
 \hspace{5pt}=\hspace{5pt}
-\sum_{j\neq i}{P_{i,j}(dt)}
+\sum_{j\neq i}{\transp_{i,j}(dt)}
 =
 $$
 $$
@@ -911,7 +912,7 @@ $$
 \hspace{10pt}
 \Rightarrow
 \hspace{10pt}
-F_i(t-dt)-F_i(t)
+F_i(t+dt)-F_i(t)
 \hspace{5pt}=\hspace{5pt}
 \left[
 \sum_{j\neq i}{q_{i,j}dt+o(dt)}
@@ -922,7 +923,7 @@ F_i(t-dt)-F_i(t)
 $$ 
 Dividing both the members of the last equation for $dt$ and computing the limit for $dt\rightarrow 0$
 $$
-\lim_{dt\rightarrow 0}{\frac{F_i(t-dt)-F_i(t)}{dt}}
+\lim_{dt\rightarrow 0}{\frac{F_i(t+dt)-F_i(t)}{dt}}
 \hspace{5pt}=\hspace{5pt}
 \frac{d\left(F_i(t)\right)}{dt}
 \hspace{5pt}=\hspace{5pt}
@@ -959,12 +960,10 @@ $$
 \noindent
 In order to find $F_i(t)$, let's solve the following Cauchy Problem:
 $$
-\begin{matrix}
 \begin{cases}
-\frac{d\left(F_i(t)\right)}{dt}=-q_{i,i}\left[1-F_i(t)\right]\\
+\dfrac{d(F_i(t))}{dt}=-q_{i,i} \cdot [1-F_i(t)]\\
 F_i(0)=0
 \end{cases}
-\end{matrix}
 $$
 Where $F_i(0)$ is the initial value of the generic state holding time $V(i)$. In order to compute the solution let's apply the following substitution:
 $$
@@ -973,34 +972,27 @@ G_i(t)\hspace{5pt}\triangleq\hspace{5pt} 1-F_i(t)
 \overset{\textrm{substituting }G_i(t) \textrm{ in}}
 {\underset{\textrm{both the equations}}{\Rightarrow}}
 \hspace{10pt}
-\begin{matrix}
 \begin{cases}
-\frac{d\left(G_i(t)\right)}{dt}=-\frac{d\left(F_i(t)\right)}{dt}=q_{i,i}\left[G_i(t)\right]\\
+\dfrac{d(G_i(t))}{dt}=-\dfrac{d(F_i(t))}{dt}=q_{i,i}\cdot G_i(t)\\
 G_i(0)=1
 \end{cases}
-\end{matrix}
 $$
 The solution to this Cauchy problem is:
 $$
-G_i(t)=e^{q_{i,i}t}
+G_i(t)=\exp(q_{i,i} \cdot t)
 \Rightarrow
-F_i(t)=1-G_i(t)=1-e^{q_{i,i}t}
+F_i(t)=1-G_i(t)=1-\exp(q_{i,i} \cdot t)
 $$
-This means that all the state holding times in CTHMC are exponentially distributed and, moreover that the rate of the distribution is negative, in particular $-q_{i,i}$. Computing the expected value of the distribution will return the result of the first statement.
+This means that all the state holding times in CTHMC are exponentially distributed and, moreover that the rate of $F_i(t)$ is negative, namely $-q_{i,i}$. Computing the expected value of the distribution will return the result of the first statement.
 \begin{flushright}
 $\blacksquare$
 \end{flushright}
 
 \bigskip\noindent
-Now the proof for the statement about the elements outside the main diagonal will be provided. Given two generic states $i$ and $j$, where $i\neq j$, and a generic time interval $\left[ t, t+dt\right]$, let's compute the following probability:
+Now the proof for the statement about the elements outside the main diagonal will be provided. Given two generic states $i$ and $j$, where $i\neq j$, and a generic time interval $(t, t+dt]$, let's compute the following probability:
 \begin{equation}
-P\left( \textrm{a transition from }i\textrm{ to }j 
-\textrm{ occurs in the interval} \left[ t, t+dt\right]
- \mid 
-X_k=i
-\right)
-\hspace{5pt}
-=
+\label{eq:qijtransition}
+P(\textit{a transition from i to j occurs in the interval } (t, t+dt] \mid X_k=i)\hspace{5pt}=
 \end{equation}
 $$
 =
@@ -1039,7 +1031,7 @@ Let's now introduce another probability, which is the generic state transition p
 $$
 p_{i,j}=P(X_{k+1}=j  \mid  X_k=i)
 $$
-$p_{i,j}$ can be obtained as sum of the probabilities like $(5)$ computed for all the intervals of the kind 
+$p_{i,j}$ can be obtained as sum of the probabilities like \ref{eq:qijtransition} computed for all the intervals of the kind 
 $[t_n,t_n+dt_n]$, with $t_0=0$, $dt \rightarrow 0$, $n\in \mathbb{N}^+$:
 $$
 p_{i,j}
