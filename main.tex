@@ -8,6 +8,7 @@
 % Aumenta lo spacing tra equazioni su più righe
 % nell'ambiente equation, rendendolo scalabile in base alla dimensione del testo
 \setlength{\jot}{3ex}
+\usepackage[makeroom]{cancel}
 \usepackage{relsize}
 \usepackage{tikz}
 \usetikzlibrary{automata,positioning,calc,shapes,arrows}
@@ -407,7 +408,7 @@ e'\neq e
 \right]}
 \left\lbrace Y_{e',k}\right\rbrace \right)
 $$
-Where the $Y$ random variables are the residual lifetimes of the feasible events in state $x$. Since the residual lifetimes follow exponential distribution, it's possible to use the equation \ref{eq:xlessy} and the superposition property to proceed with the computation:
+Where the $Y$ random variables are the residual lifetimes of the feasible events in state $x$. Since the residual lifetimes follow exponential distribution, it's possible to use Equation \ref{eq:xlessy} and the superposition property to proceed with the computation:
 \begin{equation}
 \label{eq:inxnextstateise}
 P\left(Y_{e,k} <
@@ -618,7 +619,7 @@ P\left(
 \stepcounter{footnote}\footnotetext{Union of disjoint events, you may sum them up}
 \end{equation*}
 \noindent
-In this last probability the occurrences of an \textit{i.i.d} set of exponentially distributed random variables are counted, which is equivalent to a Poisson counting process. Therefore, it's possible to substitute equation \ref{eq:poissonCountingDef} and multiply it by the probability that the system remains in $x$, given event $e$, exactly $n$ times:
+In this last probability the occurrences of an \textit{i.i.d} set of exponentially distributed random variables are counted, which is equivalent to a Poisson counting process. Therefore, it's possible to substitute Equation \ref{eq:poissonCountingDef} and multiply it by the probability that the system remains in $x$, given event $e$, exactly $n$ times:
 \begin{equation*}
 \begin{split}
 &=\prod_{e\in\Gamma(x)}\sum_{n=0}^{+\infty}
@@ -770,10 +771,14 @@ Thus:
 $$
 \frac{dH(s)}{ds}=H(s) \cdot \lim_{ds\rightarrow 0}{\frac{H(ds)-I}{ds}}
 $$
-The right-hand side limit has an indeterminate form $0/0$ since $H(0)=I$, then $(I-I)/ds = 0/0$. Let's \textit{assume that the limit exists} and let's call it $Q$. Since all the elements involved in the limit are matrices, also $Q$ will be a matrix (moreover, matrix $Q$ can be estimated on the field by performing measurements on the system). Finally, taking into account property $\#2$ it's possible to define the following Cauchy problem:
+The right-hand side limit has an indeterminate form $0/0$ since $H(0)=I$, then
+$$
+(I-I)/ds \xrightarrow{ds\rightarrow 0} 0/0
+$$
+Let's \textit{assume that the limit exists} and let's call it $Q$. Since all the elements involved in the limit are matrices, also $Q$ will be a matrix (as a side note, matrix $Q$ can be estimated on the field by performing measurements on the system). Finally, taking into account property $\#2$ it's possible to define the following Cauchy problem:
 $$
 \begin{cases}
-\mathlarger{\frac{dH(s)}{ds}}=H(s) \cdot Q\\ 
+\dfrac{dH(s)}{ds}=H(s) \cdot Q\\ 
 H(0)=I
 \end{cases}
 $$
@@ -781,14 +786,14 @@ Whose solution is:
 $$
 H(s)=e^{Qs}, \quad e^{Qs}=\sum_{n=0}^{+\infty}{\frac{(Q \cdot s)^n}{n!}}
 $$ 
-Where $e^{Qs}$ is the matrix exponential. Now we need to validate our initial assumption on the existence of $Q$:
+Where $e^{Qs}$ is the matrix exponential. Now we need to validate our initial assumption on the existence of $Q$. Starting from the initial definition of matrix $Q$, substitute the matrix exponential:
 \begin{equation*}
 \begin{aligned}
 &\lim_{ds\rightarrow 0}\frac{H(ds)-I}{ds} = \lim_{ds\rightarrow 0}\frac{e^{Qds}-I}{ds}\overset{\text{Taylor}}{\underset{1^{st}\text{ order}}{=}} \\
-&\lim_{ds\rightarrow 0}\frac{(I+Qds+o(ds))-I}{ds}=\lim_{ds\rightarrow 0}\frac{Qds}{ds}+\frac{o(ds)}{ds} = Q
+&\lim_{ds\rightarrow 0}\frac{(I+Qds+o(ds))-I}{ds}=\lim_{ds\rightarrow 0}\frac{Q\cancel{ds}}{\cancel{ds}}+\cancelto{o(1)}{\frac{o(ds)}{ds}} = Q
 \end{aligned}
 \end{equation*}
-Which means that the result is consistent with the initial assumption.
+Due to the last equality, it is clear that the result is consistent with the initial assumption.
 \begin{flushright}
 $\blacksquare$
 \end{flushright}
