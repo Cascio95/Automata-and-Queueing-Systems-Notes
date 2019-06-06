@@ -42,8 +42,8 @@
 	colorlinks,
 	citecolor=black,
 	filecolor=black,
-	linkcolor=black,
-	urlcolor=black
+	linkcolor=blue,
+	urlcolor=blue
 }
 
 \begin{document}
@@ -1324,11 +1324,11 @@ So, in order to find the equivalent Markov Chain for a Stochastic Timed Automato
 \begin{itemize}
 \item Compute the expected value of the state holding time for every state, and compute the $q_{i,i}$ as:
 $$
-q_{i,i}=-\frac{1}{E[V(i)]}=-\sum_{e\in\Gamma(i)}{\lambda_e\left[1-P(i \mid i,e)\right]}
+q_{i,i}=-\frac{1}{E[V(i)]}=-\sum_{e\in\Gamma(i)}{\lambda_e\left[1-\transp(i \mid i,e)\right]}
 $$
 \item Compute the $p_{i,j}$ according to the frequentist probability in order to find the corresponding $q_{i,j}$ as:
 $$
-q_{i,j}=-q_{i,i}p_{i,j}=\sum_{e\in\Gamma(i)}{\lambda_e P(i \mid i,e)}
+q_{i,j}=-q_{i,i}p_{i,j}=\sum_{e\in\Gamma(i)}{\lambda_e \transp(j \mid i,e)}
 $$
 \end{itemize}
 Where $\lambda_e$ is the rate of the exponential distribution (since all the events lifetimes' distributions are exponential) of the event $e$.
@@ -1414,7 +1414,7 @@ When one or more parameters are not specified it means that the model of the que
 $A/B/n/K$ are treated.
 
 \paragraph{Queueing systems in steady state}
-Before proceeding with the behaviour of queueing systems in steady state, it's necessary to provide some definitions. Let's consider the generic $k$-th customer entering a queueing system. The time spent by the customer in the system doesn't necessarily correspond to the time that took the system to process the customer request. So, said $Z_k$ and $W_k$ respectively the `service time' and the `waiting time' of the $k-th$ customer in the system, the overall time spent in the system is called `system time' and it's defined as:
+Before proceeding with the behaviour of queueing systems in steady state, it's necessary to provide some definitions. Let's consider the generic $k$-th customer entering a queueing system. The time spent by the customer in the system doesn't necessarily correspond to the time that took the system to process the customer request. So, said $Z_k$ and $W_k$ respectively the `service time' and the `waiting time' of the $k$-th customer in the system, the overall time spent in the system is called `system time' and it's defined as:
 $$
 S_k \triangleq W_k+Z_k
 $$ 
@@ -1448,19 +1448,9 @@ Using the same approach for $X(t)$, which is the number of customers in the syst
 
 \bigskip\noindent
 If there exists a random variable $X$ such that:
-$$
-P\left( X=i\right)
-\hspace{5pt}
-=
-\hspace{5pt}
-\lim_{t\rightarrow \infty}
-{P\left( X(t)\leq i\right)}
-\hspace{15pt}
-,
-\hspace{15pt}
-\forall i
-$$
-\noindent
+\begin{equation*}
+P(X = i) = \lim_{t\rightarrow \infty} P(X(t) = i), \quad \forall i
+\end{equation*}
 Then the random variable $X$ describes the number of customers in the system when this is in steady state. Moreover, always in steady state, since the number of customers in the system doesn't depend on the time anymore, then also its expected value $E\left[X(t)\right]$ doesn't:
 $$
 E\left[X(t)\right]
@@ -1546,7 +1536,7 @@ Generally, $\alpha_n(t)\neq \Pi_n(t)$, but PASTA property states that:
 $$
 \alpha_n(t) \hspace{5pt}=\hspace{5pt} \Pi_n(t) \hspace{10pt},\hspace{10pt} \forall t,n
 $$
-Which means that it's possible to obtain, under these conditions, the prior probability simply by computing the posterior probability. Moreover, since the result of PASTA property holds $\forall t$, it can also be used when the system is in steady state.
+Which means that it's possible to obtain, under these conditions, the posterior probability simply by computing the prior. Moreover, since the result of PASTA property holds $\forall t$, it can also be used when the system is in steady state.
 \newpage
 
 \paragraph{Ergodicity}
