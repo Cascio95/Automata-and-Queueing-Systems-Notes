@@ -37,7 +37,7 @@
 \title{Automata \& Queueing Systems}
 \author{Francesco Casciola}
 
-\usepackage{hyperref} %Per rendere l'indice cliccabile. Da rimuovere quando stampo.
+\usepackage[hyperfootnotes=false]{hyperref} %Per rendere l'indice cliccabile. Da rimuovere quando stampo.
 \hypersetup{
 	pdfprintscaling=None,
 	colorlinks,
@@ -631,8 +631,8 @@ P\left(
 \end{aligned}
 \right)=
 \end{aligned}
-\addtocounter{footnote}{-3} %1=n
-\stepcounter{footnote}\footnotetext{Thanks to the independence of the events' lifetimes in Poisson clock structure}
+\addtocounter{footnote}{-2} % -2 perchè sono 3 notes
+\footnotetext{Thanks to the independence of the events' lifetimes in Poisson clock structure}
 \stepcounter{footnote}\footnotetext{It may occur more than once}
 \stepcounter{footnote}\footnotetext{Union of disjoint events, you may sum them up}
 \end{equation*}
@@ -734,8 +734,9 @@ In order to execute the computation, let's consider the case in Figure \ref{fig:
 &=\sum_{r\in\mathcal{X}}P\left(X(t+s) = j \mid X(t+u) = r\right) \cdot P\left(X(t+u) = r \mid X(t) = i\right) = \\
 &=\sum_{r\in\mathcal{X}}\transp_{r,j}(s-u)\cdot\transp_{i,r}(u)
 \end{aligned}
-\footnotetext{By applying the total proability rule}
-\footnotetext{By applying the Markov property}
+\addtocounter{footnote}{-1} % -1 perchè sono 2 notes
+\footnotetext{By applying the total probability rule}
+\stepcounter{footnote}\footnotetext{By applying the Markov property}
 \end{equation*}
 \newpage
 \noindent
@@ -859,7 +860,7 @@ Where $O$ is the vector $\left(0,0,0,\dots,0\right)$. From this final result it'
 
 \bigskip\noindent
 This property has an important implication: 
-\emph{One of the eigenvalues of $Q$ it's always $0$}, since summing to one of the columns of $Q$ all the other columns will produce $O$. Therefore, the property $(\star )$ implies the linear dependency of one of the columns and, since the number of zero eigenvalues is equal to the dimension of the kernel \footnote[2]{$dim(ker(Q))=dim(Q)-rank(Q)$}, one of the eigenvalues will always be $0$.
+\emph{One of the eigenvalues of $Q$ it's always $0$}, since summing to one of the columns of $Q$ all the other columns will produce $O$. Therefore, the property $(\star )$ implies the linear dependency of one of the columns and, since the number of zero eigenvalues is equal to the dimension of the kernel \footnote{$dim(ker(Q))=dim(Q)-rank(Q)$}, one of the eigenvalues will always be $0$.
 
 \bigskip\noindent
 So, keeping in mind the property $(\star )$, let's proceed with the definition of the generic coefficient $q_{i,j}$. At the moment, only the case in which $i\neq j$ will be considered. Let's start with the first order Taylor's representation of $H(ds)$, with $ds\rightarrow 0$:
