@@ -15,18 +15,19 @@
 \usetikzlibrary{automata,positioning,calc,shapes,arrows}
 \usepackage{multirow}
 \usepackage{caption}
-\captionsetup[figure]{font=small,labelfont=small}
+\captionsetup[figure]{font=small,labelfont=small,margin={40pt,40pt}}
 \usepackage[english]{babel} 
 \usepackage{float}
 \usepackage[left=2.5cm,right=2.5cm,bottom=2cm,top=2cm,includeheadfoot]{geometry}
 % Da scommentare per abilitare un ambiente Large
 % migliore rispetto al Large normale
-%\usepackage{environ}
-%\NewEnviron{BiggerEquation*}{%
-%\begin{equation*}
-%\scalebox{1.5}{$\BODY$}
-%\end{equation*}
-%}
+\usepackage{environ}
+\NewEnviron{MatrixAdjust*}{%
+\begin{equation*}
+\scalebox{0.975}{$\BODY$}
+\end{equation*}
+}
+
 \linespread{1.2}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -42,8 +43,8 @@
 	colorlinks,
 	citecolor=black,
 	filecolor=black,
-	linkcolor=blue,
-	urlcolor=blue
+	linkcolor=black,
+	urlcolor=black
 }
 
 \begin{document}
@@ -51,8 +52,8 @@
 \tableofcontents
 \newpage
 \section{Introduction and State Automata}
-
-A system with time-driven dynamics is a kind of system in which, even though events might occur, after that the system doesn’t stay in the same state, but this variates as the time goes on.
+\label{sec:Int}
+A system with time-driven dynamics is a kind of system in which, even though events might occur, after the occurrences the system doesn’t stay in the same state, but variates as the time goes on.
 
 \bigskip
 \noindent
@@ -73,19 +74,30 @@ $\Gamma(x)$ represents the set of events that are possible in the state $x$.
 \item $x_0\in\mathcal{X}$ is the initial state.
 \end{itemize}
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{IMG/stateAut.png}
+	\begin{center}
+	\begin{tikzpicture}
+	\tikzset{edge/.style = {->,> = angle 60, thick}}
+		% draw the rectangular shape with vertical lines
+		\node[rectangle,draw,text height=1cm,text depth=1cm,inner ysep=0pt] at (0,0)  (S) {State Automaton};
+		\node[rectangle,text height=1cm,text depth=1cm,inner ysep=0pt] at (-3.65,0) (I) {$e_1, \, e_2, \, \dots, \, e_n$};
+		\node[rectangle,text height=1cm,text depth=1cm,inner ysep=0pt] at (4,0) (O) {$x_0, \, x_1, \, x_2, \, \dots, \, x_n$};
+		\path[->]
+		(I) edge  node[auto] {} (S)
+		(S) edge  node[auto] {} (O)
+		;
+	\end{tikzpicture}
+	\end{center}
 	\caption{State automaton block diagram.}
 	\label{fig:stateAut}
 \end{figure}
-Don't confuse the model with the actual system because models introduce a certain degree of approximation with respect to the reality.
+Please notice the difference between the model and and the actual system: models introduce a certain degree of approximation with respect to the real system.
 
-\paragraph{The concept of feasibility} When thinking about a real system there are many events that are possible and many others that aren’t. When modelling a system, the events that are extremely improbable (at a level that they can be considered impossible) must be excluded, but there are some events that are state-related that are actually impossible. For instance, a machine which is not working cannot complete a job. A sequence of events $(e_1,e_2,\dots,e_n)$ is \textbf{feasible} (could occur in reality) only if all the events of the sequence occur in states in which they are possible. In other words, the following conditions must hold:
+\paragraph{The concept of feasibility} When thinking about a real system there are many events that are possible and many others that aren’t. When modelling a system, the events that are extremely improbable (at a level that they can be considered impossible) must be excluded, but there are state-related events that are actually impossible. For instance, a machine which is not working cannot complete a job. A sequence of events $(e_1,e_2,\dots,e_n)$ is \textbf{feasible} (could occur in reality) only if all the events of the sequence occur in states in which they are possible. In other words, the following conditions must hold:
 \begin{align*}
 e_k &\in \Gamma (x_{k-1}), \quad k = 1,2,\dots,n \\ 
 x_k &= f(x_{k-1},e_k)
 \end{align*}
-Unfeasible sequences aren’t always obvious, which means that to find some of them it’s either necessary to have a deep knowledge of the system or to run a huge amount of model simulations (assuming that it’s realistic enough) to detect them.
+Unfeasible sequences aren’t always obvious, which means that to detect some of them it’s either necessary to have a deep knowledge of the system or to run a huge amount of model simulations (assuming that the model is realistic enough).
 
 \paragraph{State Automaton with outputs} It’s a model through which Discrete Event Systems can be represented and it’s identified as a 7-tuple $(\mathcal{E},\mathcal{X},\Gamma,f,x_0,\mathcal{Y},g)$ where:
 \begin{itemize}
@@ -93,14 +105,15 @@ Unfeasible sequences aren’t always obvious, which means that to find some of t
 \item $\mathcal{Y}$ is a discrete set of outputs.
 \item $g$ is a function taking values in $\mathcal{X}\rightarrow\mathcal{Y}$, such that $y=g(x)$ where $y\in\mathcal{Y}$ is the output corresponding to state $x\in\mathcal{X}$.
 \end{itemize}
-
+\newpage
 \section{Timed Automata}
+\label{sec:TA}
 \paragraph{Concept of time in DES} In a real system, when an event occurs, it’s also possible to know the time instant when this happens. When trying to introduce the concept of time in a State Automaton model, it’s important to remember:
 \begin{itemize}
 \item Time cannot be given as an input to the state automaton, since the inputs are independent of the system while time instants in which events occur depend on the system itself. 
 \end{itemize}
-This can be demonstrated by considering the execution of jobs on certain elements by a given machine as regulated by two different disciplines (while having the time as input): First-In-First-Out (FIFO) and Round-Robin (RR). The FIFO discipline is self-explanatory. The RR is based on the concept of `time slice’, which is the maximum time the machine dedicates to a certain element that needs processing before switching to the next one. In the case in which the time needed to complete the job on the first element is higher than the time slice, the partially processed element will be put back in the queue in last position.
-Both the disciplines allow the machine to complete the job on all the elements, but, even if their times of arrival are the same, the times in which they are accepted in the system and the ones in which the processing on every single element terminates are different. This means that the time instants in which the events occur cannot be given as input to the system, as they depend on it.
+This can be demonstrated by considering the execution of jobs on some elements by a given machine as regulated by two different disciplines (while having the time as input): First-In-First-Out (FIFO) and Round-Robin (RR). The FIFO discipline is self-explanatory. The RR is based on the concept of `time slice’, which is the maximum time the machine dedicates to a certain element that needs processing before switching to the next one. In the case in which the time needed to complete the job on the first element is higher than the time slice, the partially processed element will be put back in the queue in last position.
+Both the disciplines allow the machine to complete the job on all the elements, but, even if their times of arrival are the same, the times in which they are accepted in the system and the ones in which the processing on each single element terminates are different between the two disciplines. This means that the time instants in which the events occur cannot be given as input to the system, since they depend on it.
 
 \paragraph{Timed Automaton}
 A solution to the problem presented in the past paragraph is to use as inputs, instead of the time instants, the duration of processes, at the end of which the events occur. This way, when the system enters a state $x$ in which a given event $e$ is possible, in the model it’s possible to start a process of a set duration. This process represents the \textit{event's lifetime} and when the lifetime depletes, the event occurs. Finally, the time instant when $e$ occurs is obtained as sum of the time instants in which the system enters the state x and the lifetime of the event e.
@@ -113,11 +126,30 @@ V=\{V_e : e\in\mathcal{E}\}, \quad V_e=\{v_{e,1}, v_{e,2}, v_{e,3},\dots\}
 $$
 \end{itemize}	
 \noindent
-Where $V_e$ is the clock sequence of event $e$ and $v_{e,i}$ is the lifetime of the $i$-th occurrence of event $e$. Please note that lifetimes must be $v_{e,i} \ge 0$ for the model to be representative of a real system.
+Where $V_e$ is the clock sequence of event $e$ and $v_{e,i}$ is the lifetime of the $i$-th occurrence of event $e$. Please note that lifetimes must be $v_{e,i} \ge 0$ for the model to be representative of a real system (since event lifetimes cannot be negative).
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{IMG/timedAut.png}
+	\begin{flushright}
+	\begin{tikzpicture}
+	\tikzset{edge/.style = {->,> = angle 60, thick}}
+		% draw the rectangular shape with vertical lines
+		\node[rectangle,draw,text height=1cm,text depth=1cm,inner ysep=0pt] at (-1,0)  (S) {Timed Automaton};
+		\node[rectangle,text height=1cm,text depth=1cm,inner ysep=0pt] at (-4.5,0) (I) {$V$};
+		\node[rectangle,text height=1cm,text depth=1cm,inner ysep=0pt] at (4.5,0) (O) {
+		$		
+		\begin{matrix}
+		&x_0, & x_1, & x_2, & \dots, & x_n \\
+		&e_1, & e_2, & e_3, & \dots, & e_n \\
+		&t_0, & t_1, & t_2, & \dots, & t_n \\
+		\end{matrix}
+		$};
+		\node[rectangle,text height=1cm,text depth=1cm,inner ysep=0pt] at (7.3,0) (d){}; %invisible node to center the picture
+		\path[->]
+		(I) edge  node[auto] {} (S)
+		(S) edge  node[auto] {} (O)
+		;
+	\end{tikzpicture}
+	\end{flushright}	
 	\caption{Timed automaton block diagram.}
 	\label{fig:timedAut}
 \end{figure}
@@ -125,7 +157,7 @@ Where $V_e$ is the clock sequence of event $e$ and $v_{e,i}$ is the lifetime of 
 \paragraph{Residual Times} According to the definition of a Timed Automaton when entering a state in which an event is possible a process with a certain lifetime starts. Let’s consider the situation in which there are two lifetimes, related to two events $e_1$ and $e_2$, where $V_{e1}<V_{e2}$ that start when the system enters the state $x_{k-1}$. The event $e_1$ will occur first and the system will enter state $x_k$. If event $e_2$ is still possible in state $x_k$ then, instead of starting a new process with its lifetime, the `residual lifetime’ $y_{e2}=V_{e2}-V_{e1}$ is employed. If event $e_2$ is not possible there are two options: either dropping the current lifetime in order to start a new process when the event becomes possible again or keeping the residual lifetime in order to reuse it when the system enters a state in which $e_2$ is possible again. The choice between these options, in the model, depends on the behaviour of the system.
 
 \paragraph{Notation for Timed Automata}
-The `score’ of an event $e$ at the time $t$, denoted $n_e (t)$, is the number of lifetimes of the event e completed in the interval $[t_0,t]$. From now on the following notation will be used:
+The `score’ of an event $e$ at the time $t$, denoted $n_e (t)$, is the number of lifetimes of the event $e$ used in the interval $[t_0,t]$ (where $t_0$ is the initial time of the system). From now on the following notation will be adopted:
 \begin{itemize}
 \item With respect to event occurrences:
 	\begin{itemize}
@@ -171,8 +203,8 @@ for all the events $e\in\mathcal{E}$.
 $$
 n_{e,k}=
 \begin{cases}
-n_{e,k-1}+1 & \text{if a new total lifetime is used (ass. 1 and 2)} \\
-n_{e,k-1} & \text{if the residual lifetime is used (ass. 3)}
+n_{e,k-1}+1 & \text{if a new total lifetime is used (asm. 1, asm 2)} \\
+n_{e,k-1} & \text{if the residual lifetime is used (asm. 3)}
 \end{cases}
 $$
 \item \textbf{Update of the residual lifetimes:}
@@ -184,12 +216,13 @@ v_{e,n_{e,k}} & \text{if } \left[\left(e\notin\Gamma(x_{k-1})\wedge e\in\Gamma(x
 y_{e,k-1}-y_{k-1}^{*} & \text{if } \left[e\in\Gamma(x_{k-1})\wedge e\neq e_{k} \wedge e\in\Gamma(x_{k}) \right] \\
 \end{cases}
 $$
-\item \textbf{Assign value $k+1$ to variable $k$ and go to step 1.}
+\item \textbf{Increase by one the value of variable $k$ and go to step 1.}
 \end{enumerate}
-
+\newpage
 \section{Stochastic Timed Automata}
+\label{sec:STA}
 \paragraph{Concept of ubiquitous uncertainty}
-In real systems there might be a degree of uncertainty which must be accounted for in the system's models. Suppose you have two machines which operate in parallel: how can you determine if they are both available, which one will start working when a piece arrives? Here’s a list of the elements in the Timed automaton which are subject to uncertainty:
+In real systems there might be a degree of uncertainty which must be accounted for in the system's models. Let's suppose having two machines which operate in parallel: how can one determine if they are both available, which one will start working when a piece arrives? Here’s a list of the elements in the Timed automaton which are subject to uncertainty:
 \begin{itemize}
 \item $f$: The example just described is a case of uncertainty in the state transition function.
 \item $x_0$: Let’s consider a shop, if it opens at a given time $t_0$ and there are some people waiting for it to open, how long is the queue (state) at $t_0$? 
@@ -197,7 +230,7 @@ In real systems there might be a degree of uncertainty which must be accounted f
 \end{itemize}
 The need to introduce elements of uncertainty in the model bring to the definition of the next kind of state automaton.
 \paragraph{Stochastic Timed Automaton}
-It’s a model through which Discrete Event Systems with elements of uncertainty can be represented and it’s identified as a $6$-tuple $(\mathcal{E},\mathcal{X},\Gamma,P,p_0,F)$ where:
+It’s a model through which Discrete Event Systems can be represented, when the elements of uncertainty must be taken into account, and it’s identified as a $6$-tuple $(\mathcal{E},\mathcal{X},\Gamma,P,p_0,F)$ where:
 \begin{itemize}
 \item $(\mathcal{E},\mathcal{X},\Gamma)$ are the same as for the timed automaton.
 \item $\transp$ is a set of transition probabilities from a state to another. It substitutes $f$ and it’s defined as follows:
@@ -228,7 +261,7 @@ We consider stochastic clock structure satisfying three assumptions:
 \end{itemize}
 
 \paragraph{Exponential Distribution}
-When computing probabilities (like the probability of reaching a given state within a certain amount of time), since the lifetimes are random variables, it’s normally possible to know only the distributions of the total lifetimes, but not the one of the ones of the residual lifetimes. An exception is the one of exponential distribution which has some helpful properties that we are going to observe. The exponential distribution $X \sim \text{Exp}(1/\lambda)$ (where $1/\lambda$ is the location parameter and $\lambda$ is the rate) is defined as follows:
+When computing probabilities (like the probability of reaching a given state within a certain amount of time), since the lifetimes are random variables, it’s normally possible to know only the distributions of the total lifetimes, but not the one of the ones of the residual lifetimes. An exception is the one of exponential distribution which has some helpful properties that will be observed soon. The exponential distribution $X \sim \text{Exp}(1/\lambda)$ (where $1/\lambda$ is the location parameter and $\lambda$ is the rate) is defined as follows:
 $$
 \begin{matrix}
 F_X(t)=P\left(X\leq t\right)=
@@ -237,7 +270,7 @@ F_X(t)=P\left(X\leq t\right)=
 0 & \textrm{otherwise} \\
 \end{cases}
 &&&
-f_X(t)=\frac{dF_X(t)}{dt}=
+f_X(t)=\dfrac{dF_X(t)}{dt}=
 \begin{cases}
 \lambda e^{-\lambda t} & \textrm{if } t\geq 0 \\
 0 & \textrm{otherwise} \\
@@ -247,16 +280,16 @@ $$
 Where $F_X(t)$ is the CDF and $f_X(t)$ is the pdf. The aforementioned properties are the following:
 \begin{itemize}
 \item \textbf{Memoryless property}: 
-If the time between the occurrences $X$ of a given event is modelled through an exponential distribution and at the time $t$ the event hasn't occurred yet, the probability of the occurrence of the event (computed at a time $s>t$) does not depend $t$. In formulae:
+If the time $X$ between the occurrences of a given event is modelled through an exponential distribution and at the time $t$ the event hasn't occurred yet, the probability of the occurrence of the event (computed at a time $s>t$) does not depend $t$. In formulae:
 $$
 P(X>t+s \mid X>t)= P(X>s)
 $$
 \emph{Proof:}
 \begin{equation*}
 \begin{split}
-P(X>t+s \mid X>t) &= \frac{P(X>t+s \textrm{ , } X>t)}{P(X>t)} = \frac{P(X>t+s)}{P(X>t)}= \\
-= \frac{1-P(X\leq t+s)}{1-P(X\leq t)} &=\frac{1-F_X(t+s)}{1-F_X(t)} = \frac{e^{-\lambda (t+s)}}{e^{-\lambda t}} = e^{-\lambda s} = \\
-&= 1 - P(X \leq s) = P(X>s)
+&P(X>t+s \mid X>t) = \frac{P(X>t+s \textrm{ , } X>t)}{P(X>t)} = \frac{P(X>t+s)}{P(X>t)}= \\
+=&\, \frac{1-P(X\leq t+s)}{1-P(X\leq t)} =\frac{1-F_X(t+s)}{1-F_X(t)} = \frac{e^{-\lambda (t+s)}}{e^{-\lambda t}} = e^{-\lambda s} = \\
+=&\, 1 - P(X \leq s) = P(X>s)
 \end{split}
 \end{equation*}
 \begin{flushright}
@@ -282,15 +315,13 @@ Let's compute the numerator: $P(X>Y+s)$ is equal to the highlighted area $A$ in 
 \end{center}
 \end{figure}
 This consideration allows us to proceed as follows:
-\begin{equation*}
-\begin{split}
-P(X>Y+s) = P(X,Y\in A) = \int_{0}^{+\infty}dy\int_{y+s}^{+\infty}f_Y(y)\lambda e^{-\lambda x}dx= &\\
-=\int_{0}^{+\infty}f_Y(y)dy\int_{y+s}^{+\infty}\lambda e^{-\lambda x}dx =\int_{0}^{+\infty}f_Y(y)
-\left[-e^{-\lambda x}\right]^{+\infty}_{y+s}dy = &\\
-=\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}e^{-\lambda s}dy = e^{-\lambda s}
-\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}dy
-\end{split}
-\end{equation*}
+\begin{align*}
+&P(X>Y+s) = P(X,Y\in A) = \int_{0}^{+\infty}dy\int_{y+s}^{+\infty}f_Y(y)\lambda e^{-\lambda x}dx= \\
+=&\int_{0}^{+\infty}f_Y(y)dy\int_{y+s}^{+\infty}\lambda e^{-\lambda x}dx =\int_{0}^{+\infty}f_Y(y)
+\left[-e^{-\lambda x}\right]^{+\infty}_{y+s}dy = \\
+=&\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}e^{-\lambda s}dy = e^{-\lambda s}
+\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}dy\\
+\end{align*}
 Since the $s$ in the lower limit of integration in the innermost integral produces only a term 
 $e^{-\lambda s}$ which can be put outside the integral, it's clear that
 $$
@@ -306,7 +337,7 @@ $\blacksquare$
 \end{flushright}
 
 \item \textbf{Superposition property}:
-Let's consider the case in it's required to know, for independent events with exponentially distributed lifetimes $\left( X_i\sim Exp\left(\frac{1}{\lambda_i}\right)\right)$, the one that occurs first. The random variable that must be taken into account is:
+Let's consider the case where it's required to know, for independent events with exponentially distributed lifetimes $\left( X_i\sim Exp\left(\dfrac{1}{\lambda_i}\right)\right)$, the one that occurs first. The random variable that must be taken into account is:
 $$
 X=\min_{i=1,2,\dots,n}{\{X_i\}}
 $$ 
@@ -319,20 +350,35 @@ $$
 P(X\leq t) = 1-P(X>t) = 1-P(\min_{i=1,\dots,n}{X_i}>t)
 $$
 From this last result, considering both the independence of the distributions and the fact that if the value $\min_i{\{X_i\}}$ is greater than $t$ then all the $X_i$ are, it's possible to proceed with the computation as follows:
-$$
-1-P(\min_{i=1,\dots,n}{X_i}>t) = 1-\prod_{i=1}^{n}{P(X_i>t)} = 1-\prod_{i=1}^{n}{1-P(X_i\leq t)} =
-$$
-$$
-= 1-\prod_{i=1}^{n}{e^{-\lambda_{i}t}} = 1-e^{-\sum_{i}{\lambda_i t}} = 1-e^{-t\lambda'}
-$$
+\begin{align*}
+1-P(\min_{i=1,\dots,n}{X_i}>t) &= 1-\prod_{i=1}^{n}{P(X_i>t)} = 1-\prod_{i=1}^{n}{1-P(X_i\leq t)} =
+\\
+&= 1-\prod_{i=1}^{n}{e^{-\lambda_{i}t}} = 1-e^{-\sum_{i}{\lambda_i t}} = 1-e^{-t\lambda'}
+\end{align*}
 Where $\lambda' = \sum_{i=1}^{n}{\lambda_i}$.
 \begin{flushright}
 $\blacksquare$
 \end{flushright}
 \end{itemize}
-\newpage
 \noindent
-In addition to these properties, a `useful computation' (for the next topics) will be executed. Given two exponentially distributed random variables $X\sim Exp\left(\frac{1}{\lambda}\right),Y\sim Exp\left(\frac{1}{\mu}\right)$, let's compute the probability $P(X \leq Y+s)$:
+In addition to these properties, a `useful computation' (for the next topics) will be executed. Given two exponentially distributed random variables $X\sim Exp\left(\dfrac{1}{\lambda}\right),Y\sim Exp\left(\dfrac{1}{\mu}\right)$, let's compute the probability $P(X \leq Y+s)$:
+\begin{align*}
+P(X \leq Y+s) &= \int_{0}^{+\infty}dy\int_{0}^{y+s}\lambda e^{-\lambda x}\mu e^{-\mu y}dx
+= \int_{0}^{+\infty}\mu e^{-\mu y}dy\int_{0}^{y+s}\lambda e^{-\lambda x}dx = 
+\\
+&=\int_{0}^{+\infty}\mu e^{-\mu y}\left[ -e^{-\lambda x}\right]_0^{y+s}dy
+= \int_{0}^{+\infty}\mu e^{-\mu y}\left[ 1-e^{-\lambda(y+s)}\right]dy =
+\\
+&= \int_{0}^{+\infty}\mu e^{-\mu y}dy - e^{-\lambda s}\int_{0}^{+\infty}\mu e^{-\mu y} e^{-\lambda y}dy\\
+&= \left[-e^{-\mu y} + \frac{\mu e^{-\lambda s}}{\lambda + \mu}e^{-(\lambda+\mu)y}\right]_{0}^{+\infty}
+= 1-\dfrac{\mu e^{-\lambda s}}{\lambda + \mu} \\
+\end{align*}
+Setting $s=0$ yields a closed-form formula for computing $P(X\leq Y)$ (skipping the entire chain of integration) which corresponds to the probability of lifetime X being less than lifetime Y.
+\begin{equation}
+\label{eq:xlessy}
+P(X\leq Y)= \frac{\lambda}{\lambda + \mu}
+\end{equation}
+In the next chapter this last result will be used a lot, so it's important to keep it in mind.
 \begin{figure}[H]
 \begin{center}
 \includegraphics[width=0.5\textwidth]{IMG/CommArea2.eps}
@@ -340,28 +386,9 @@ In addition to these properties, a `useful computation' (for the next topics) wi
 \label{Picture 2}
 \end{center}
 \end{figure}
-$$
-P(X \leq Y+s) = \int_{0}^{+\infty}dy\int_{0}^{y+s}\lambda e^{-\lambda x}\mu e^{-\mu y}dx
-= \int_{0}^{+\infty}\mu e^{-\mu y}dy\int_{0}^{y+s}\lambda e^{-\lambda x}dx = 
-$$
-$$
-=\int_{0}^{+\infty}\mu e^{-\mu y}\left[ -e^{-\lambda x}\right]_0^{y+s}dy
-= \int_{0}^{+\infty}\mu e^{-\mu y}\left[ 1-e^{-\lambda(y+s)}\right]dy =
-$$
-$$
-= \int_{0}^{+\infty}\mu e^{-\mu y}dy - e^{-\lambda s}\int_{0}^{+\infty}\mu e^{-\mu y} e^{-\lambda y}dy
-= \left[-e^{-\mu y} + \frac{\mu e^{-\lambda s}}{\lambda + \mu}e^{-(\lambda+\mu)y}\right]_{0}^{+\infty} =
-$$
-$$
-= 1-\frac{\mu e^{-\lambda s}}{\lambda + \mu} 
-$$
-Setting $s=0$ yields a closed-form formula for computing $P(X\leq Y)$ (skipping the entire chain of integration) which corresponds to the probability of lifetime X being less than lifetime Y.
-\begin{equation}
-\label{eq:xlessy}
-P(X\leq Y)= \frac{\lambda}{\lambda + \mu}
-\end{equation}
-In the next chapter this last result will be used a lot, so it's important to keep it in mind.
+\newpage
 \section{Stochastic Timed Automata With Poisson Clock Structure}
+\label{sec:STAWPCS}
 \paragraph{Poisson Counting Processes} It's a process which counts the occurrences of an event which is always possible. In particular, the `interarrival times' $T_i$ between any two occurrences of the same event are \textit{i.i.d.} and their distribution is:
 $$
 T_i\sim Exp\left(\frac{1}{\lambda}\right), \quad \lambda > 0
@@ -391,11 +418,11 @@ Finally, it possible to compute the probability that at least $n$ occurrences of
 $$
 P\left(N_e(s) \geq n\right) = 1 - \sum_{m=0}^{n-1}P\left(N_e(s) = m \right) = 1 - \sum_{m=0}^{n-1} \frac{(\lambda s)^m}{m!}e^{-\lambda s}
 $$
-The first equality arises from the fact that the complement of $(n,n+1,n+2,\dots)$ is $(n-1,n-2,\dots)$. This is equivalent to splitting $s$ into $n$ intervals, each having width equal to $T_i$. Thus:
+The first equality arises from the fact that the complement of $(n,n+1,n+2,\dots)$ is $(n-1,n-2,\dots)$. This is equivalent to comparing $s$ to the sum of $n$ interarrival times $T_i$, coming from the same exponential distribution. Thus:
 $$
 P(T_1 + \dots + T_n \leq s) = 1 - \sum_{m=0}^{n-1} \frac{(\lambda s)^m}{m!}e^{-\lambda s}
 $$
-
+\newpage
 \paragraph{Stochastic Timed Automaton With Poisson Clock Structure}
 It's a stochastic timed automaton 
 $(\mathcal{E},\mathcal{X},\Gamma,\transp,\transp_0,F)$ where $F = \{F_e : e \in \mathcal{E}\}$, \textbf{with \textit{i.i.d.} events' lifetimes} and:
@@ -407,7 +434,7 @@ It's important to notice that there is no constraint about whether the events ar
 
 \bigskip
 \noindent
-In stochastic timed automata with Poisson clock structure it's quite straightforward (compared to other models) to compute useful probabilities via closed-form formulas, such as:
+In stochastic timed automata with Poisson clock structure it's quite straightforward (compared to other models) to compute useful probabilities via closed-form formulae, like:
 \begin{enumerate}
 \item $P(E_{k+1}=e \mid X_k=x)$ which is the probability that the next event $E_{k+1}$ (uppercase, since it's a random variable) will be $e$, given that the current state is $x$:
 $$
@@ -438,13 +465,12 @@ Where $(\Lambda(x)-\lambda_e)$ is the rate of $Y_{e',k}$ since $\Lambda(x)$ is t
 $$
 \Lambda(x) = \mathlarger{\sum_{e \in \Gamma(x)}\lambda_e}
 $$
-
+\newpage
 \item $P(X_{k+1}=x' \mid X_k=x)$ which is the probability that the next state is $x'$, given that the current state is $x$:
-$$
-P(X_{k+1}=x' \mid X_k=x) \hspace{20pt}\underset{\textrm{rule}}{\overset{\textrm{total probability}}{=}}
-$$
-$$
-=\sum_{e\in \Gamma(x)}{
+\begin{align*}
+&P(X_{k+1}=x' \mid X_k=x) \qquad\underset{\textrm{rule}}{\overset{\textrm{total probability}}{=}}
+\\
+&=\sum_{e\in \Gamma(x)}{
 \left[
 P\left(
 X_{k+1}=x' \mid X_k=x\textrm{, }E_{k+1}=e
@@ -454,9 +480,8 @@ E_{k+1}=e \mid X_k=x
 \right)
 \right]
 }=
-$$
-$$
-=
+\\
+&=
 \sum_{e\in \Gamma(x)}{
 \left[
 P\left(
@@ -464,22 +489,22 @@ X_{k+1}=x' \mid X_k=x\textrm{, }E_{k+1}=e
 \right)\cdot
 \frac{\lambda_e}{\Lambda(x)}
 \right]}\triangleq
-$$
-$$
-\underset{\textrm{for a more lean notation}}{\triangleq}
+\\
+&\underset{\textrm{for a more lean notation}}{\triangleq}
+\qquad
 \sum_{e\in \Gamma(x)}{
 \left[
 \transp\left(x' \mid x,e
 \right)\cdot
 \frac{\lambda_e}{\Lambda(x)}
 \right]}
-$$
+\end{align*}
 \end{enumerate}
 These two results are quite good, but there are still more things that can be done. By defining 
 $\mathcal{E}=\left\lbrace 1,2,\dots,m \right\rbrace$ and 
 $\mathcal{X}=\left\lbrace 1,2,\dots,n \right\rbrace$
 it's possible to define the following matrices and vector:
-$$
+\begin{MatrixAdjust*}
 P_E=
 \left[
 \begin{matrix}
@@ -501,9 +526,10 @@ P\left(E_{k+1}=2  \mid  X_k=n\right)&&
 P\left(E_{k+1}=m  \mid  X_k=n\right)
 \end{matrix}
 \right]
-$$
+\nonumber
+\end{MatrixAdjust*}
 \bigskip
-$$
+\begin{MatrixAdjust*}
 P_X=
 \left[
 \begin{matrix}
@@ -525,9 +551,10 @@ P\left(X_{k+1}=2  \mid  X_k=n\right)&&
 P\left(X_{k+1}=n  \mid  X_k=n\right)
 \end{matrix}
 \right]
-$$
+\nonumber
+\end{MatrixAdjust*}
 \bigskip
-$$
+\begin{equation*}
 \Pi_X(k)=
 \left[
 \begin{matrix}
@@ -537,10 +564,10 @@ P(X_k=2)&
 P(X_k=n)&
 \end{matrix}
 \right]
-$$
-\bigskip
+\end{equation*}\label{eq:stateprobs}
+
 \noindent
-So it's possible to redefine $P(X_{k+1} = x' \mid X_k = x)$ as the probability that the $k+1$-th state is $j$ as:
+Thus, it's possible to redefine $P(X_{k+1} = x' \mid X_k = x)$ as the probability that the $k+1$-th state is $j$ as:
 $$
 P\left(X_{k+1}=j\right)=\sum_{\mathlarger{i\in \mathcal{X}}}
 {
@@ -550,21 +577,29 @@ P\left(X_{k+1}=j\right)=\sum_{\mathlarger{i\in \mathcal{X}}}
 $$ 
 $P(X_{k+1} = j)$ will be the $j$-th entry of the vector $\Pi_X(k+1)$ and of the product $\Pi_X(k) \cdot P_X$. 
 So assuming that $\Pi_X(0)$ is known:
+%$$ %%%%%%uncomment%%%%%%
+%\Pi_X(0) \quad = \quad
+%\left[
+%\begin{matrix}
+%\transp_0(1),&
+%\transp_0(2),&
+%\dots,&
+%\transp_0(n)
+%\end{matrix}
+%\right]
+%$$
 $$
-\Pi_X(0)=
-\left[
-\begin{matrix}
-\transp_0(1),&
-\transp_0(2),&
-\dots,&
-\transp_0(n)
-\end{matrix}
-\right]
-$$
-$$
-\begin{matrix}
-\Pi_X(1)&=&\Pi_X(0) \cdot P_X\\
-\Pi_X(2)&=&\Pi_X(1) \cdot P_X&=&\Pi_X(0) \cdot P_X^2\\
+\begin{matrix} 
+\Pi_X(0)&=&\left[ %%%%%
+\begin{matrix} %%%%%%
+\transp_0(1),& %%%%%%
+\transp_0(2),& %%%%%%
+\dots,& %%%%%%
+\transp_0(n)%%%%%
+\end{matrix} %%%%%
+\right]\\\\%%%%%
+\Pi_X(1)&=&\Pi_X(0) \cdot P_X\\\\%%%%%
+\Pi_X(2)&=&\Pi_X(1) \cdot P_X&=&\Pi_X(0) \cdot P_X^2\\\\%%%%%%
 \Pi_X(3)&=&\Pi_X(2) \cdot P_X&=&\Pi_X(0) \cdot P_X^3\\
 &&\vdots\\
 \Pi_X(k+1)&=&\Pi_X(k) \cdot P_X&=&\Pi_X(0)P_X^k
@@ -634,22 +669,23 @@ P\left(
 In this last probability the occurrences of an \textit{i.i.d} set of exponentially distributed random variables are counted, which is equivalent to a Poisson counting process. Therefore, it's possible to substitute Equation \ref{eq:poissonCountingDef} and multiply it by the probability that the system remains in $x$, given event $e$, exactly $n$ times:
 \begin{equation*}
 \begin{split}
-&=\prod_{e\in\Gamma(x)}\sum_{n=0}^{+\infty}
-\frac{\left(\lambda_e t\right)^{n}}{n!} \cdot e^{-\lambda_e t} \cdot \transp\left( x \mid x,e\right)^{n} = \\
-&=\prod_{e\in\Gamma(x)}e^{-\lambda_e t}\sum_{n=0}^{+\infty} \frac{\left[(\lambda_e t)\cdot \transp (x \mid x,e)\right]^n}{n!}
+=\prod_{e\in\Gamma(x)}\sum_{n=0}^{+\infty}
+\frac{\left(\lambda_e t\right)^{n}}{n!} \cdot e^{-\lambda_e t} \cdot \transp\left( x \mid x,e\right)^{n}
+=\prod_{e\in\Gamma(x)}e^{-\lambda_e t}\sum_{n=0}^{+\infty} \frac{\left[(\lambda_e t)\cdot \transp (x \mid x,e)\right]^n}{n!}
 =
 \end{split}
 \end{equation*}
+
 \noindent
 Now the last sum can be rewritten as $e^x=\sum_{n=0}^{+\infty}x^n/n!$ (Maclaurin series expansion):
 \begin{equation*}
-\begin{split}
-&=\prod_{e\in\Gamma(x)}\exp(-\lambda_e t) \cdot
-\exp(\lambda_e t \cdot \transp\left(x \mid x,e\right))= \\
-&=\prod_{e\in\Gamma(x)}\exp(-\lambda_e \left[1 - \transp(x \mid x,e)\right] t)= \\
-&= \exp\left(- \sum_{e\in\Gamma(x)} \lambda_e \left[1 - \transp(x \mid x,e)\right] t\right)
-\end{split}
+=\prod_{e\in\Gamma(x)}\exp(-\lambda_e t) \cdot
+\exp(\lambda_e t \cdot \transp\left(x \mid x,e\right))
+=\prod_{e\in\Gamma(x)}\exp(-\lambda_e \left[1 - \transp(x \mid x,e)\right] t)=
 \end{equation*}
+$$
+= \exp\left(- \sum_{e\in\Gamma(x)} \lambda_e \left[1 - \transp(x \mid x,e)\right] t\right)
+$$
 \noindent
 Switching to the cdf of interest is straightforward (namely, the complement of $P(V(x)) > t$), thus:
 \begin{equation*}
@@ -660,6 +696,7 @@ $\blacksquare$
 \end{flushright}
 \newpage
 \section{Markov Chains}
+\label{sec:MC}
 \paragraph{Stochastic Processes}
 An example of a stochastic process was already proposed when talking about `Poisson counting process', now a slightly more formal definition will be given: \emph{`a stochastic process is a collection $\left\lbrace X\left(t\right) \right\rbrace_{t\in T} $
 of random variables indexed by a time index $t\in T$'}, where $T$ is a time interval which can be either discrete or continuous.
@@ -674,11 +711,7 @@ only when the independence between the random variables holds, therefore with st
 
 \bigskip
 \noindent 
-Given $X(t_1), X(t_2),\dots, X(t_n)$ random variables with $t_1<t_2<\dots<t_n \in T$ and $n=1,2,\dots$ the process is said \textit{`independent'} if all the $n-$tuples are independent. 
-
-\bigskip
-\noindent 
-Let $x(t)$ be the realisation of the random variable $X(t)$, if the equality:
+Given $X(t_1), X(t_2),\dots, X(t_n)$ random variables with $t_1<t_2<\dots<t_n \in T$ and $n\in\mathbb{N}^+$ the process is said \textit{`independent'} if all the $n-$tuples are independent. So, let $x(t)$ be the realisation of the random variable $X(t)$, if the equality:
 $$
 P\left(X\left(t+s\right)=\overset{\sim}{x} \mid X\left(\tau\right)=
 x\left(\tau\right),\hspace{5pt}\forall\tau\leq t\right)=
@@ -693,28 +726,28 @@ P\left(X(t+s)=\overset{\sim}{x} \mid X(t)=x(t)\right)
 $$
 holds, the process is independent. This definition allows the stochastic processes whose next realisation depends only on the current one to be called independent (\textit{`Markov property'}).
 
-\bigskip
-\noindent
-The Continuous Time Homogeneous Markov Chains is a stochastic process with the following properties:
+\newpage\noindent
+A Continuous Time Homogeneous Markov Chain is a stochastic process with the following properties:
 \begin{itemize}
 \item $T=\mathbb{R}^+\Rightarrow\left\lbrace t\in\mathbb{R}:\;t\geq 0\right\rbrace $ (\textbf{Continuous Time}).
 \item $X(t)\in \mathcal{X}=\left\lbrace 1,2,\dots\right\rbrace$ (\textbf{Chain}).
-\item \textbf{Markov property} since it is a chain.
+\item \textbf{Markov property}.
 \item \textbf{Homogeneity}: the transition function depends only on the prediction horizon
 $$
 P\left(X(t+s)=j \mid X(t)=i\right) = P\left(X(t'+s)=j \mid X(t')=i\right),\;\forall t\neq t'
 $$
-Thus it can be rewritten as:
+Thus, it can be rewritten as:
 $$
 \transp_{i,j}(s) = P\left(X(t+s)=j \mid X(t)=i\right)
 $$
 \end{itemize} 
 \paragraph{Chapman-Kolmogorov Equation}
 Please notice that $x(t)\in \mathcal{X}$ implies that the process' random variables realisations are the states of the system modelled as a CTHMC. So, let's try to compute the probability that, given a current state $i$, after a time $s$ the state will be $j$:
-$$
+\begin{equation*}
 \transp_{i,j}(s) = P\left(X(t+s)=j \mid X(t)=i\right)
-$$
-\begin{figure}
+\end{equation*}
+
+\begin{figure}[h]
 \begin{center}
 \includegraphics[width=0.35\textwidth]{IMG/CTHMC1.eps}
 \caption{At time $t$ the current state is $i$. At $t+s$ the next state is $j$, while at $t+u$ the state is $r \in \mathcal{X}$ which can be $i$, $j$ or any other state.}
@@ -733,6 +766,7 @@ In order to execute the computation, let's consider the case in Figure \ref{fig:
 \footnotetext{By applying the total proability rule}
 \footnotetext{By applying the Markov property}
 \end{equation*}
+\newpage
 \noindent
 The equality:
 \begin{equation}
@@ -751,7 +785,7 @@ H(s)=\left[
 $$
 This matrix has some important properties:
 \begin{enumerate}
-\item The sum of the elements along any row of $H(s)$ is 1.
+\item The sum of the elements along any row of $H(s)$ is 1 (being the sum of the probabilities related to all the possible cases starting from the state the row refers to).
 \item As a result of the previous property, if $s=0$ then the probability that the state does not change is 1, therefore $\transp_{i,i} = 1$ and $\transp_{i,j} = 0, \; j \neq i$:
 $$
 H(0)=I
@@ -785,7 +819,7 @@ $$
 $$
 The right-hand side limit has an indeterminate form $0/0$ since $H(0)=I$, then
 $$
-(I-I)/ds \xrightarrow{ds\rightarrow 0} 0/0
+\frac{(I-I)}{ds} \xrightarrow{ds\rightarrow 0} \frac{0}{0}
 $$
 Let's \textit{assume that the limit exists} and let's call it $Q$. Since all the elements involved in the limit are matrices, also $Q$ will be a matrix (as a side note, matrix $Q$ can be estimated on the field by performing measurements on the system). Finally, taking into account property $\#2$ it's possible to define the following Cauchy problem:
 $$
@@ -821,7 +855,7 @@ q_{2,1} & q_{2,2} &  \cdots \cr
 \end{matrix}
 \right]
 $$
-where the generic element $q_{i,j}$ is called transition rate (their dimension is \si{\per\second}). Since the need of defining $Q$ came from the computation of the derivative of the matrix $H$, the properties of $H$ have been used to define the ones of $Q$. Let's start from the property of $H$ about the sum along any row being always $1$. Said $\textrm{\underline{\textbf{1}}}$ 
+where the generic element $q_{i,j}$ is called transition rate (and has dimention \si{\per\second}). Since the need of defining $Q$ came from the computation of the derivative of the matrix $H$, the properties of $H$ have been used to define the ones of $Q$. Let's start from the property of $H$ about the sum along any row being always $1$. Said $\textrm{\underline{\textbf{1}}}$ 
 the vector $(1,1,1,\dots,1)^T$:
 $$
 H(s)\cdot \textrm{\underline{\textbf{1}}} = \textrm{\underline{\textbf{1}}}
@@ -860,9 +894,9 @@ This property has an important implication:
 So, keeping in mind the property $(\star )$, let's proceed with the definition of the generic coefficient $q_{i,j}$. At the moment, only the case in which $i\neq j$ will be considered. Let's start with the first order Taylor's representation of $H(ds)$, with $ds\rightarrow 0$:
 $$
 H(ds) \hspace{5pt} =\hspace{5pt}e^{Qds}
-\hspace{5pt}
+\quad
 \overset{\textrm{Taylor}}{\underset{1^{st}\textrm{ order}}{=}}
-\hspace{5pt}
+\quad
 I+Qds+o(ds)
 $$ 
 
@@ -872,7 +906,7 @@ So, reducing this last equation to the coefficients of the matrices involved, th
 $$
 \transp_{i,j}(ds)=q_{i,j}ds+o(ds)
 $$
-Looking at the equation it's clear that \underline{\emph{all the $q_{i,j}$ with $i\neq j$ are non-negative}}, since $\transp_{i,j}(s)\geq 0$ (being a probability), $ds\geq 0$ (as it represents time, which cannot be negative) and $o(ds)$ goes to zero with $ds\rightarrow 0$. 
+Looking at the equation it's clear that \underline{\emph{all the $q_{i,j}$ with $i\neq j$ are non-negative}}, since $\transp_{i,j}(s)$ $\geq 0$ (being a probability), $ds\geq 0$ (as it represents time, which cannot be negative) and $o(ds)$ goes to zero with $ds\rightarrow 0$. 
 \newpage
 \noindent
 The non-negativity of $q_{i,j}$ and the property $(\star )$, impose that:
@@ -903,70 +937,55 @@ F_i(t)\hspace{5pt}\triangleq\hspace{5pt}
 P\left( V(i)\leq t \right)
 $$
 And let's consider a small increment $dt$ of $t$ such that a state transition (only one) occurs in the time interval $(t,t+dt]$:
-$$
-F_i(t+dt)-F_i(t)\hspace{5pt}=\hspace{5pt}
-P\left( t < V(i) \leq t+dt\right)\hspace{5pt}=\hspace{5pt}
+\begin{align*}
+&F_i(t+dt)-F_i(t)=
+P\left( t < V(i) \leq t+dt\right)=
 P\left(V(i) \leq t+dt \mid  V(i)>t \right)\cdot 
 \underbrace{P\left(V(i)>t\right)}_{1-F_i(t)}
-$$
-$$
-\overset{\textrm{in particular}}{\Rightarrow}\hspace{10pt}
-P\left(V(i) \leq t+dt \mid  V(i)>t \right)
-\hspace{5pt}=\hspace{5pt}
-\sum_{j\neq i}{\transp_{i,j}(dt)}
-=
-$$
-$$
-\overset{\textrm{Taylor}}{\underset{1^{st}\textrm{ order}}{=}}
-\hspace{5pt}
+\\
+&\overset{\textrm{in particular}}{\Rightarrow}
+\quad P\left(V(i) \leq t+dt \mid  V(i)>t \right)=
+\sum_{j\neq i}{\transp_{i,j}(dt)}\quad
+\overset{\textrm{Taylor}}{\underset{1^{st}\textrm{ order}}{=}}\quad
 \sum_{j\neq i}{q_{i,j}dt+o(dt)}
-\hspace{10pt}
-\Rightarrow
-\hspace{10pt}
+\Rightarrow\\
+&\Rightarrow
 F_i(t+dt)-F_i(t)
-\hspace{5pt}=\hspace{5pt}
+=
 \left[
 \sum_{j\neq i}{q_{i,j}dt+o(dt)}
 \right]
 \left[
 1-F_i(t)
 \right]
-$$ 
+\end{align*} 
 Dividing both the members of the last equation for $dt$ and computing the limit for $dt\rightarrow 0$
-$$
-\lim_{dt\rightarrow 0}{\frac{F_i(t+dt)-F_i(t)}{dt}}
-\hspace{5pt}=\hspace{5pt}
-\frac{d\left(F_i(t)\right)}{dt}
-\hspace{5pt}=\hspace{5pt}
-\lim_{dt\rightarrow 0}\frac{
+\begin{align*}
+&\lim_{dt\rightarrow 0}{\frac{F_i(t+dt)-F_i(t)}{dt}}
+=\frac{d\left(F_i(t)\right)}{dt}
+&=&\quad\lim_{dt\rightarrow 0}\dfrac{
 \left[
 \sum_{j\neq i}{q_{i,j}dt+o(dt)}
 \right]
 \left[
 1-F_i(t)
-\right]}{dt}
-$$ 
-$$
-\frac{d\left(F_i(t)\right)}{dt}
-\hspace{5pt}=\hspace{5pt}
-\lim_{dt\rightarrow 0}{
+\right]}{dt}=
+\\
+=&\lim_{dt\rightarrow 0}{
 \left[
 \sum_{j\neq i}{\frac{q_{i,j}dt}{dt}+\frac{o(dt)}{dt}}
 \right]
 \left[
 1-F_i(t)
 \right]}
-\hspace{5pt}=\hspace{5pt}
-\sum_{j\neq i}{q_{i,j}}
+&=&\quad\sum_{j\neq i}{q_{i,j}}
+\left[
+1-F_i(t)
+\right]=-q_{i,i}
 \left[
 1-F_i(t)
 \right]
-\hspace{5pt}=\hspace{5pt}
--q_{i,i}
-\left[
-1-F_i(t)
-\right]
-$$
+\end{align*}
 \newpage
 \noindent
 In order to find $F_i(t)$, let's solve the following Cauchy Problem:
@@ -979,10 +998,10 @@ $$
 Where $F_i(0)$ is the initial value of the generic state holding time $V(i)$. In order to compute the solution let's apply the following substitution:
 $$
 G_i(t)\hspace{5pt}\triangleq\hspace{5pt} 1-F_i(t)
-\hspace{10pt}
+\quad
 \overset{\textrm{substituting }G_i(t) \textrm{ in}}
 {\underset{\textrm{both the equations}}{\Rightarrow}}
-\hspace{10pt}
+\quad
 \begin{cases}
 \dfrac{d(G_i(t))}{dt}=-\dfrac{d(F_i(t))}{dt}=q_{i,i}\cdot G_i(t)\\
 G_i(0)=1
@@ -1001,44 +1020,32 @@ $\blacksquare$
 
 \bigskip\noindent
 Now the proof for the statement about the elements outside the main diagonal will be provided. Given two generic states $i$ and $j$, where $i\neq j$, and a generic time interval $(t, t+dt]$, let's compute the following probability:
+
 \begin{equation}
 \label{eq:qijtransition}
-P(\textit{a transition from i to j occurs in the interval } (t, t+dt] \mid X_k=i)\hspace{5pt}=
+P\big(\textit{a transition from i to j occurs in the interval } (t, t+dt] \mid X_k=i\big)=
 \end{equation}
-$$
-=
-\hspace{5pt}
-P\left( V(i)>t\right)
+
+\begin{align*}
+=P\left( V(i)>t\right)
 P_{i,j}(dt)
-\hspace{5pt}
-=
-\hspace{5pt}
+&=
 \left[1-P\left( V(i)\leq t\right)\right]
 \underbrace{P_{i,j}(dt)}_{
 \overset{\textrm{Taylor }1^{\textrm{st}}\textrm{ order}}
-{\overset{\Downarrow}{q_{i,j}dt+o(dt)}}}
-\hspace{5pt}
+{\Rightarrow q_{i,j}dt+o(dt)}}
 \overset{dt\rightarrow 0}{=}
-\hspace{5pt}
 \left[1-\left(1-e^{q_{i,i} t}\right)\right]q_{i,j}dt
-\hspace{5pt}
-=
-$$
-\begin{large}
-$$
-\Rightarrow
-\hspace{5pt}
+\\\Rightarrow&
 P\left( V(i)>t\right)
 P_{i,j}(dt)
-\hspace{5pt}
 =
-\hspace{5pt}
-e^{q_{i,i} t}q_{i,j}dt
-$$
-\end{large}
+\exp(q_{i,i} t)q_{i,j}dt
+\end{align*}
+
 
 \noindent 
-Let's now introduce another probability, which is the generic state transition probability from $i$ to $j$, without taking into account the time:
+Let's now introduce another probability, which is the overall transition probability from $i$ to $j$, without taking into account the time:
 $$
 p_{i,j}=P(X_{k+1}=j  \mid  X_k=i)
 $$
@@ -1077,7 +1084,7 @@ $\blacksquare$
 \end{flushright}
 \newpage
 \subsection{Steady State Analysis}
-Let's consider the `State Probability Vector' $\Pi(t)$, similar to the one in `\emph{Section $4$}':
+Let's consider the `State Probability Vector' $\Pi(t)$, similar to $\Pi_X(k)$ in \emph{Section \ref{eq:stateprobs}}:
 $$
 \Pi(t)\triangleq \left[
 \begin{matrix}
@@ -1126,16 +1133,14 @@ $$
 \noindent
 Which means that, to study the behaviour of the system in the transient state, it's enough to find the solution to the following Cauchy problem:
 
-\begin{Large}
 $$
 \begin{matrix}
 \begin{cases}
-\frac{d\Pi(t)}{dt}=\Pi(t)Q\\
+\dfrac{d\Pi(t)}{dt}=\Pi(t)Q\\
 \Pi(0)=\Pi_0 \\
 \end{cases}
 \end{matrix}
 $$
-\end{Large}
 
 \noindent
 Where $\Pi_0$ is the initial state of the system.
@@ -1190,7 +1195,6 @@ $$
 ;
 \end{tikzpicture}
 $$
-\captionsetup{margin={60pt,60pt}}
 \caption{\small the subset $\{3,4\}$ is an example of closed set, since once the system enters in state $3$ it's not possible that it will return to state $1$ or $2$ anymore.}
 \end{center}
 \end{figure}
@@ -1198,7 +1202,6 @@ $$
 \item \textbf{Recurrence}: Let's define the random variable $T_{i,i}$ as the time that takes to the system to return in state $i$. Let's also define the probability 
 $\rho_i(t) \triangleq P\left( T_{i,i}<t\right)
 $. Considering the limit for $t\rightarrow\infty$ of $\rho_i(t)$ it's possible to know if the system will ever return to state $i$.
-
 $$
 \rho_i\triangleq\lim_{t\rightarrow\infty}{\rho_i(t)}=
 \begin{matrix}
@@ -1208,19 +1211,19 @@ a<1 & \textrm{ then the state i is transient}\\
 \end{cases}
 \end{matrix}
 $$
-
 \noindent
 Starting form the assumption that the state $i$ is recurrent, it's possible to realise a further classification. First of all it's important to remember that $\rho_i(t)$ is the CDF of $T_{i,i}$, so it's possible to define also the PDF $f_i(t)$ as $\rho_i(t)$'s derivative.
-\newpage
+
+\noindent
 So, now it's possible to compute the expected value $M_i$ of $T_{i,i}$, as follows:
 $$
 M_i\triangleq E\left[T_{i,i}\right]=\int_{0}^{+\infty}{t\cdot f_i(t)dt}=
 \begin{matrix}
 \begin{cases}
-\infty & \textrm{then the integral doesn't converge and }\\
-&\textrm{the state }i\textrm{ it's called `null recurrent'.}\\
-a<\infty & \textrm{then the integral converges and }\\
-& \textrm{the state }i\textrm{ it's called `positive recurrent'.}\\
+\infty & \textrm{then the integral doesn't converge}\\
+&\textrm{and the state }i\textrm{ is said `null recurrent'.}\\
+a<\infty & \textrm{then the integral converges and the}\\
+& \textrm{state }i\textrm{ is said `positive recurrent'.}\\
 \end{cases}
 \end{matrix}
 $$
@@ -1252,7 +1255,7 @@ The actual definition of the stationary probability vector brings some problems 
 \end{itemize}
 A theorem (whose proof is not provided in these notes) states that for Continuous Time Homogeneous Markov Chains these problems, under precise conditions, can all be easily solved.
 
-\bigskip
+\newpage
 \noindent
 \textbf{Theorem}: 
 
@@ -1264,7 +1267,6 @@ $$
 $$
 exist, with $\Pi_i>0,\hspace{4pt}\forall i\in\mathcal{X}$ and they are all independent of $\Pi_0$. Moreover, the vector $\Pi$ can be computed by solving the system of linear equations:
 
-\begin{Large}
 $$
 \begin{matrix}
 \begin{cases}
@@ -1273,8 +1275,7 @@ $$
 \end{cases}
 \end{matrix}
 $$
-\end{Large}
-\newpage
+
 \noindent
 From this last theorem, keeping in mind also the corollary $\#2.1$ of the previous paragraph, the following corollary can be obtained:
 
@@ -1306,9 +1307,7 @@ $$
 \frac{d\Pi(t)}{dt}=\Pi(t)Q \hspace{10pt} \overset{t\rightarrow\infty}{\Rightarrow}\hspace{10pt} \Pi Q=0
 $$
 \newpage
-\paragraph{Equivalent CTHMC for Stochastic Timed Automata With Poisson Clock Structure}
-
-\noindent A Stochastic Timed Automaton with Poisson Clock Structure $(\mathcal{E},\mathcal{X},\Gamma,P,p_0,F)$
+\paragraph{Equivalent CTHMC} A Stochastic Timed Automaton with Poisson Clock Structure $(\mathcal{E},\mathcal{X},\Gamma,P,p_0,F)$
 is `stochastically equivalent' to a CTHMC $(\mathcal{X},Q,\Pi_0)$ which has:
 \begin{itemize}
 \item the same distributions for the state holding times:
@@ -1334,10 +1333,11 @@ $$
 Where $\lambda_e$ is the rate of the exponential distribution (since all the events lifetimes' distributions are exponential) of the event $e$.
 \newpage
 \section{Queueing Systems}
+\label{sec:QS}
 Queueing systems are a really important kind of discrete events systems and they can be treated using any of the models defined up to now. When looking for a representation for a queueing system, a really general one could be the following:
-
 \begin{figure}[H]
 \begin{center}
+\scalebox{0.9}{
 \begin{tikzpicture}
 % draw the rectangular shape with vertical lines
 \node[rectangle split, rectangle split parts=4,
@@ -1354,9 +1354,9 @@ draw, rectangle split horizontal,text height=1cm,text depth=0.5cm,inner ysep=0pt
 \draw[-] (s2.east) -- +(2.20cm,2.80cm) node[left] {};
 \draw[-] (s1.east) -- +(2.20cm,-2.80cm) node[left] {};
 \draw[->] (h1.east) -- +(30pt,0) node[left] {};
-\end{tikzpicture}
+\end{tikzpicture}}
 \caption{\small Generic queueing system representation.}
-\label{Picture 4}
+\label{fig:QueuingSys}
 \end{center}
 \end{figure}
 In order to define a queueing system, some parameters must be specified:
@@ -1368,8 +1368,8 @@ In order to define a queueing system, some parameters must be specified:
 	\end{itemize}
 \item \textbf{Operating Policies}:
 	\begin{itemize}
-	\item Number of accepted customers and their `type' (so the kind of service they need).
-	\item Scheduling Policy of the queue (FIFO, Round-Robin, Shortest Processing Time, ...).
+	\item Number of accepted customers and the kind of service they need (type).
+	\item Scheduling Policy of the queue (FIFO, Round-Robin, ...).
 	\item Conditions to accept new customers in the system.
 	\end{itemize}
 \item \textbf{Distributions of interarrival and sevice times}.
@@ -1382,12 +1382,9 @@ $$
 \newpage
 \paragraph{Kendall's Notation} can be used to describe queueing systems where there exists only one kind of customer. 
 The notation is composed by the following set of parameters:
-\begin{Large}
-$$
-A \hspace{3pt} / \hspace{3pt} B \hspace{3pt} / \hspace{3pt} m \hspace{3pt} / \hspace{3pt} K
-/ \hspace{3pt} n \hspace{3pt} / \hspace{3pt} D
-$$
-\end{Large}
+\begin{center}
+\textbf{A / B / m / K / n / D}
+\end{center}
 
 \noindent
 Where:
@@ -1414,80 +1411,66 @@ When one or more parameters are not specified it means that the model of the que
 $A/B/n/K$ are treated.
 
 \paragraph{Queueing systems in steady state}
-Before proceeding with the behaviour of queueing systems in steady state, it's necessary to provide some definitions. Let's consider the generic $k$-th customer entering a queueing system. The time spent by the customer in the system doesn't necessarily correspond to the time that took the system to process the customer request. So, said $Z_k$ and $W_k$ respectively the `service time' and the `waiting time' of the $k$-th customer in the system, the overall time spent in the system is called `system time' and it's defined as:
+Before proceeding with the behaviour of queueing systems in steady state, it's necessary to provide some definitions. Let's consider the generic $k$-th customer entering a queueing system. The time spent by the customer in the system doesn't necessarily correspond to the time that took the system to process the customer request due to the presence of the queue. So, said $Z_k$ and $W_k$ respectively the `service time' and the `waiting time' of the $k$-th customer in the system, the overall time spent in the system is called `system time' and it's defined as:
 $$
 S_k \triangleq W_k+Z_k
 $$ 
-Generally, the distribution of the system time it's different for every customer accepted in the system, but after a certain amount of customers accepted by the system, this might enter in a steady state. If a queueing system enters steady state, then the distributions of the system times will be the same for all the customers.
+Generally, the distribution of the system time changes accordingly to the number $k$ of customers accepted in the system up to that moment, but if, after a certain amount of customers accepted, the system enters in a steady state, then the distribution of the system times will be the same for all the customers.
 \newpage
 \noindent
-\textbf{Definition:}
-
-\bigskip\noindent
+\textbf{System time in steady state: }
 If there exists a random variable $S$ such that:
 $$
 P\left( S\leq t\right)
-\hspace{5pt}
-=
-\hspace{5pt}
-\lim_{k\rightarrow \infty}
+=\lim_{k\rightarrow \infty}
 {P\left( S_k\leq t\right)}
-\hspace{15pt}
-,
-\hspace{15pt}
+\quad,\quad
 \forall t
 $$
 Then the random variable $S$ describes the system time of a generic customer while the system is in steady state.
 
-\bigskip\noindent
-Using the same approach for $X(t)$, which is the number of customers in the system at time $t$:
-
 \bigskip
 \noindent
-\textbf{Definition:}
-
-\bigskip\noindent
-If there exists a random variable $X$ such that:
+\textbf{Average amount of customers in steady state } If there exists a random variable $X$ such that:
 \begin{equation*}
 P(X = i) = \lim_{t\rightarrow \infty} P(X(t) = i), \quad \forall i
 \end{equation*}
 Then the random variable $X$ describes the number of customers in the system when this is in steady state. Moreover, always in steady state, since the number of customers in the system doesn't depend on the time anymore, then also its expected value $E\left[X(t)\right]$ doesn't:
 $$
 E\left[X(t)\right]
-\hspace{5pt}
 =
-\hspace{5pt}
 \sum_{i}
 {
 i \cdot P\left(X(t)=i\right)
 }
-\hspace{5pt}
-\overset{t\rightarrow \infty}{=}
-\hspace{5pt}
+\quad
+\overset{t\rightarrow \infty}{=}\quad
 \sum_{i}
 {
 i \cdot P\left(X=i\right)
 }
 $$
-From the rightmost result it comes out that $E\left[X(t)\right]=E\left[X\right]$.
+From the rightmost result comes out that $E\left[X(t)\right]=E\left[X\right]$.
+In particular, thorugh these definitions it's possible to find a necessary condition for the system to be in steady state.
 
 \bigskip\noindent
-In particular, from these definitions it's possible to define a necessary condition for the system to be in steady state. Said $\mu_{eff}$ the effective production rate and $\lambda_{eff}$ the effective arrival rate (rate of arrivals accepted in the system) at steady state the following condition must hold:
+\textbf{Effective rates and necessary condition for steady state }
+Said $\mu_{eff}$ the effective production rate and $\lambda_{eff}$ the effective arrival rate (rate of arrivals accepted in the system) at steady state the following condition must hold:
 $$
-\mu_{eff}\hspace{5pt}=\hspace{5pt}\lambda_{eff}
+\mu_{eff}=\lambda_{eff}
 $$
-This condition hold also for queueing networks, which are queueing systems composed by others queueing sub-systems. So, considering a system consisting of two stations in series, each of them composed by a machine preceded by a buffer, if the whole system reaches steady state the following conditions will hold:
+This condition holds also for queueing networks, which are queueing systems composed by others queueing sub-systems. So, considering a system consisting of two stations in series, each of them composed by a machine preceded by a buffer, if the whole system reaches steady state the following conditions will hold:
 $$
-\mu_{eff,1}\hspace{5pt}=\hspace{5pt}\lambda_{eff,1}
-\hspace{10pt}
+\mu_{eff,1}=\lambda_{eff,1}
+\quad
 ,
-\hspace{10pt}
-\mu_{eff,2}\hspace{5pt}=\hspace{5pt}\lambda_{eff,2}
+\quad
+\mu_{eff,2}=\lambda_{eff,2}
 $$
 When studying the steady state of a queueing system, an important parameter to take into account would be the `utilization' $U$, which is the fraction of time (over all the system activity time) in which the machine is actively working. If $U=1$ the machine it's always working, of course if $U=1$ for an observation time $t\rightarrow \infty$, then the machine is perfect. 
 
 \bigskip\noindent
-The utilization value is also used to obtain another parameter called \emph{throughput}, which is defined as the mean number of requests serviced during a time unit:
+The utilization value is also used to obtain another parameter called \emph{throughput}, which is defined as the mean number of requests served during a time unit:
 $$
 throughput\hspace{5pt}=\hspace{5pt}U\cdot m\cdot \mu_{eff}
 $$
@@ -1502,13 +1485,9 @@ Let's consider a queueing network at steady state and a curve $\Sigma$, closed a
 \item $E[S_{\Sigma}]$ as the expected value of the time spent by a customer in $\Sigma$ (if $\Sigma$ surrounds the whole network $E[S_{\Sigma}]=E[S]$).
 \end{itemize}
 Little's Law states that:
-
-\bigskip \noindent
-\begin{Large}
-$$
-E[X_{\Sigma}]\hspace{5pt}=\hspace{5pt}\lambda_{\Sigma}\cdot E[S_{\Sigma}]
-$$
-\end{Large}
+\begin{equation*}
+E[X_{\Sigma}]=\lambda_{\Sigma}\cdot E[S_{\Sigma}]
+\end{equation*}
 
 \bigskip \noindent
 This law comes particularly handy since $E[S_{\Sigma}]$ it's often hard to compute directly, while instead it's easy to do it for the other two parameters.
@@ -1534,7 +1513,7 @@ Generally, $\alpha_n(t)\neq \Pi_n(t)$, but PASTA property states that:
 \bigskip\noindent
 \emph{If the arrivals are generated by a Poisson process and the lifetimes for arrivals and service terminations are independent then:}
 $$
-\alpha_n(t) \hspace{5pt}=\hspace{5pt} \Pi_n(t) \hspace{10pt},\hspace{10pt} \forall t,n
+\alpha_n(t) = \Pi_n(t) \quad,\quad \forall t,n
 $$
 Which means that it's possible to obtain, under these conditions, the posterior probability simply by computing the prior. Moreover, since the result of PASTA property holds $\forall t$, it can also be used when the system is in steady state.
 \newpage
