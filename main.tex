@@ -43,8 +43,8 @@
 	colorlinks,
 	citecolor=black,
 	filecolor=black,
-	linkcolor=blue,
-	urlcolor=blue
+	linkcolor=black,
+	urlcolor=black
 }
 
 \begin{document}
@@ -74,8 +74,19 @@ $\Gamma(x)$ represents the set of events that are possible in the state $x$.
 \item $x_0\in\mathcal{X}$ is the initial state.
 \end{itemize}
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{IMG/stateAut.png}
+	\begin{center}
+	\begin{tikzpicture}
+	\tikzset{edge/.style = {->,> = angle 60, thick}}
+		% draw the rectangular shape with vertical lines
+		\node[rectangle,draw,text height=1cm,text depth=1cm,inner ysep=0pt] at (0,0)  (S) {State Automaton};
+		\node[rectangle,text height=1cm,text depth=1cm,inner ysep=0pt] at (-3.65,0) (I) {$e_1, \, e_2, \, \dots, \, e_n$};
+		\node[rectangle,text height=1cm,text depth=1cm,inner ysep=0pt] at (4,0) (O) {$x_0, \, x_1, \, x_2, \, \dots, \, x_n$};
+		\path[->]
+		(I) edge  node[auto] {} (S)
+		(S) edge  node[auto] {} (O)
+		;
+	\end{tikzpicture}
+	\end{center}
 	\caption{State automaton block diagram.}
 	\label{fig:stateAut}
 \end{figure}
@@ -118,8 +129,27 @@ $$
 Where $V_e$ is the clock sequence of event $e$ and $v_{e,i}$ is the lifetime of the $i$-th occurrence of event $e$. Please note that lifetimes must be $v_{e,i} \ge 0$ for the model to be representative of a real system (since event lifetimes cannot be negative).
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{IMG/timedAut.png}
+	\begin{flushright}
+	\begin{tikzpicture}
+	\tikzset{edge/.style = {->,> = angle 60, thick}}
+		% draw the rectangular shape with vertical lines
+		\node[rectangle,draw,text height=1cm,text depth=1cm,inner ysep=0pt] at (-1,0)  (S) {Timed Automaton};
+		\node[rectangle,text height=1cm,text depth=1cm,inner ysep=0pt] at (-4.5,0) (I) {$V$};
+		\node[rectangle,text height=1cm,text depth=1cm,inner ysep=0pt] at (4.5,0) (O) {
+		$		
+		\begin{matrix}
+		&x_0, & x_1, & x_2, & \dots, & x_n \\
+		&e_1, & e_2, & e_3, & \dots, & e_n \\
+		&t_0, & t_1, & t_2, & \dots, & t_n \\
+		\end{matrix}
+		$};
+		\node[rectangle,text height=1cm,text depth=1cm,inner ysep=0pt] at (7.3,0) (d){}; %invisible node to center the picture
+		\path[->]
+		(I) edge  node[auto] {} (S)
+		(S) edge  node[auto] {} (O)
+		;
+	\end{tikzpicture}
+	\end{flushright}	
 	\caption{Timed automaton block diagram.}
 	\label{fig:timedAut}
 \end{figure}
@@ -257,9 +287,9 @@ $$
 \emph{Proof:}
 \begin{equation*}
 \begin{split}
-P(X>t+s \mid X>t) &= \frac{P(X>t+s \textrm{ , } X>t)}{P(X>t)} = \frac{P(X>t+s)}{P(X>t)}= \\
-= \frac{1-P(X\leq t+s)}{1-P(X\leq t)} &=\frac{1-F_X(t+s)}{1-F_X(t)} = \frac{e^{-\lambda (t+s)}}{e^{-\lambda t}} = e^{-\lambda s} = \\
-&= 1 - P(X \leq s) = P(X>s)
+&P(X>t+s \mid X>t) = \frac{P(X>t+s \textrm{ , } X>t)}{P(X>t)} = \frac{P(X>t+s)}{P(X>t)}= \\
+=&\, \frac{1-P(X\leq t+s)}{1-P(X\leq t)} =\frac{1-F_X(t+s)}{1-F_X(t)} = \frac{e^{-\lambda (t+s)}}{e^{-\lambda t}} = e^{-\lambda s} = \\
+=&\, 1 - P(X \leq s) = P(X>s)
 \end{split}
 \end{equation*}
 \begin{flushright}
@@ -285,13 +315,15 @@ Let's compute the numerator: $P(X>Y+s)$ is equal to the highlighted area $A$ in 
 \end{center}
 \end{figure}
 This consideration allows us to proceed as follows:
-\begin{align*}
-P(X>Y+s) = P(X,Y\in A) &= \int_{0}^{+\infty}dy\int_{y+s}^{+\infty}f_Y(y)\lambda e^{-\lambda x}dx= \\
-=\int_{0}^{+\infty}f_Y(y)dy\int_{y+s}^{+\infty}\lambda e^{-\lambda x}dx &=\int_{0}^{+\infty}f_Y(y)
+\begin{equation*}
+\begin{aligned}
+&P(X>Y+s) = P(X,Y\in A) = \int_{0}^{+\infty}dy\int_{y+s}^{+\infty}f_Y(y)\lambda e^{-\lambda x}dx= \\
+=&\int_{0}^{+\infty}f_Y(y)dy\int_{y+s}^{+\infty}\lambda e^{-\lambda x}dx =\int_{0}^{+\infty}f_Y(y)
 \left[-e^{-\lambda x}\right]^{+\infty}_{y+s}dy = \\
-=\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}e^{-\lambda s}dy &= e^{-\lambda s}
-\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}dy\\
-\end{align*}
+=&\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}e^{-\lambda s}dy = e^{-\lambda s}
+\int_{0}^{+\infty}f_Y(y)e^{-\lambda y}dy
+\end{aligned}
+\end{equation*}
 Since the $s$ in the lower limit of integration in the innermost integral produces only a term 
 $e^{-\lambda s}$ which can be put outside the integral, it's clear that
 $$
@@ -332,18 +364,19 @@ $\blacksquare$
 \end{itemize}
 \noindent
 In addition to these properties, a `useful computation' (for the next topics) will be executed. Given two exponentially distributed random variables $X\sim Exp\left(\dfrac{1}{\lambda}\right),Y\sim Exp\left(\dfrac{1}{\mu}\right)$, let's compute the probability $P(X \leq Y+s)$:
-\begin{align*}
-P(X \leq Y+s) = \int_{0}^{+\infty}dy\int_{0}^{y+s}\lambda e^{-\lambda x}\mu e^{-\mu y}dx
-&= \int_{0}^{+\infty}\mu e^{-\mu y}dy\int_{0}^{y+s}\lambda e^{-\lambda x}dx = 
+\begin{equation*}
+\begin{aligned}
+P(X \leq Y+s) &= \int_{0}^{+\infty}dy\int_{0}^{y+s}\lambda e^{-\lambda x}\mu e^{-\mu y}dx
+= \int_{0}^{+\infty}\mu e^{-\mu y}dy\int_{0}^{y+s}\lambda e^{-\lambda x}dx = 
 \\
-=\int_{0}^{+\infty}\mu e^{-\mu y}\left[ -e^{-\lambda x}\right]_0^{y+s}dy
-&= \int_{0}^{+\infty}\mu e^{-\mu y}\left[ 1-e^{-\lambda(y+s)}\right]dy =
+&=\int_{0}^{+\infty}\mu e^{-\mu y}\left[ -e^{-\lambda x}\right]_0^{y+s}dy
+= \int_{0}^{+\infty}\mu e^{-\mu y}\left[ 1-e^{-\lambda(y+s)}\right]dy =
 \\
-= \int_{0}^{+\infty}\mu e^{-\mu y}dy - e^{-\lambda s}\int_{0}^{+\infty}\mu e^{-\mu y} e^{-\lambda y}dy
-&= \left[-e^{-\mu y} + \frac{\mu e^{-\lambda s}}{\lambda + \mu}e^{-(\lambda+\mu)y}\right]_{0}^{+\infty} =
-\\
-= 1-\dfrac{\mu e^{-\lambda s}}{\lambda + \mu} \\
-\end{align*}
+&= \int_{0}^{+\infty}\mu e^{-\mu y}dy - e^{-\lambda s}\int_{0}^{+\infty}\mu e^{-\mu y} e^{-\lambda y}dy\\
+&= \left[-e^{-\mu y} + \frac{\mu e^{-\lambda s}}{\lambda + \mu}e^{-(\lambda+\mu)y}\right]_{0}^{+\infty}
+= 1-\dfrac{\mu e^{-\lambda s}}{\lambda + \mu}
+\end{aligned}
+\end{equation*}
 Setting $s=0$ yields a closed-form formula for computing $P(X\leq Y)$ (skipping the entire chain of integration) which corresponds to the probability of lifetime X being less than lifetime Y.
 \begin{equation}
 \label{eq:xlessy}
@@ -1383,11 +1416,11 @@ When one or more parameters are not specified it means that the model of the que
 $A/B/n/K$ are treated.
 
 \paragraph{Queueing systems in steady state}
-Before proceeding with the behaviour of queueing systems in steady state, it's necessary to provide some definitions. Let's consider the generic $k$-th customer entering a queueing system. The time spent by the customer in the system doesn't necessarily correspond to the time that took the system to process the customer request. So, said $Z_k$ and $W_k$ respectively the `service time' and the `waiting time' of the $k$-th customer in the system, the overall time spent in the system is called `system time' and it's defined as:
+Before proceeding with the behaviour of queueing systems in steady state, it's necessary to provide some definitions. Let's consider the generic $k$-th customer entering a queueing system. The time spent by the customer in the system doesn't necessarily correspond to the time that took the system to process the customer request due to the presence of the queue. So, said $Z_k$ and $W_k$ respectively the `service time' and the `waiting time' of the $k$-th customer in the system, the overall time spent in the system is called `system time' and it's defined as:
 $$
 S_k \triangleq W_k+Z_k
 $$ 
-Generally, the distribution of the system time it's different for every customer accepted in the system, but after a certain amount of customers accepted by the system, this might enter in a steady state. If a queueing system enters steady state, then the distributions of the system times will be the same for all the customers.
+Generally, the distribution of the system time changes accordingly to the number $k$ of customers accepted in the system up to that moment, but if, after a certain amount of customers accepted, the system enters in a steady state, then the distribution of the system times will be the same for all the customers.
 \newpage
 \noindent
 \textbf{System time in steady state: }
