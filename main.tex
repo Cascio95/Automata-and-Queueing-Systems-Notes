@@ -567,13 +567,10 @@ P(X_k=n)&
 
 \noindent
 Thus, it's possible to redefine $P(X_{k+1} = x' \mid X_k = x)$ as the probability that the $k+1$-th state is $j$ as:
-$$
-P\left(X_{k+1}=j\right)=\sum_{\mathlarger{i\in \mathcal{X}}}
-{
-\underbrace{P\left(X_{k+1}=j  \mid  X_k=i\right)}_{(i,j)-\text{th}\text{ entry of }P_X}
-\underbrace{P\left(X_k=1\right)}_{i-th\text{ entry of }\Pi_X(k)}
-}
-$$ 
+\begin{equation*}
+P(X_{k+1} = j) = 
+\sum_{i \in \mathcal{X}} \underbrace{P(X_{k+1} = j \mid X_k = i)}_{ (i,j) \text{-th entry of } P_X} \underbrace{P(X_k = i)}_{i \text{-th entry of } \Pi_X(k)}
+\end{equation*}
 $P(X_{k+1} = j)$ will be the $j$-th entry of the vector $\Pi_X(k+1)$ and of the product $\Pi_X(k) \cdot P_X$. 
 So assuming that $\Pi_X(0)$ is known:
 %$$ %%%%%%uncomment%%%%%%
@@ -766,8 +763,6 @@ In order to execute the computation, let's consider the case in Figure \ref{fig:
 \footnotetext{By applying the total probability rule}
 \stepcounter{footnote}\footnotetext{By applying the Markov property}
 \end{equation*}
-\newpage
-\noindent
 The equality:
 \begin{equation}
 \label{eq:chapmanKDef}
