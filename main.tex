@@ -155,7 +155,7 @@ Where $V_e$ is the clock sequence of event $e$ and $v_{e,i}$ is the lifetime of 
 	\label{fig:timedAut}
 \end{figure}
 
-\paragraph{Residual Times} According to the definition of a Timed Automaton when entering a state in which an event is possible a process with a certain lifetime starts. Let’s consider the situation in which there are two lifetimes, related to two events $e_1$ and $e_2$, where $V_{e1}<V_{e2}$ that start when the system enters the state $x_{k-1}$. The event $e_1$ will occur first and the system will enter state $x_k$. If event $e_2$ is still possible in state $x_k$ then, instead of starting a new process with its lifetime, the `residual lifetime’ $y_{e2}=V_{e2}-V_{e1}$ is employed. If event $e_2$ is not possible there are two options: either dropping the current lifetime in order to start a new process when the event becomes possible again or keeping the residual lifetime in order to reuse it when the system enters a state in which $e_2$ is possible again. The choice between these options, in the model, depends on the behaviour of the system.
+\paragraph{Residual Times} According to the definition of a Timed Automaton when entering a state in which an event is possible a process with a certain lifetime starts. Let’s consider the situation in which there are two lifetimes, related to two events $e_1$ and $e_2$, where $V_{e1}<V_{e2}$ that start when the system enters the state $x_{k-1}$. The event $e_1$ will occur first and the system will enter state $x_k$. If event $e_2$ is still possible in state $x_k$ then, instead of starting a new process with its lifetime, the `residual lifetime’ $y_{e,2}=V_{e,2}-V_{e,1}$ is employed. If event $e_2$ is not possible there are two options: either dropping the current lifetime in order to start a new process when the event becomes possible again or keeping the residual lifetime in order to reuse it when the system enters a state in which $e_2$ is possible again. The choice between these options, in the model, depends on the behaviour of the system.
 
 \paragraph{Notation for Timed Automata}
 The `score’ of an event $e$ at the time $t$, denoted $n_e (t)$, is the number of lifetimes of the event $e$ used in the interval $[t_0,t]$ (where $t_0$ is the initial time of the system). From now on the following notation will be adopted:
@@ -231,7 +231,7 @@ In real systems there might be a degree of uncertainty which must be accounted f
 \end{itemize}
 The need to introduce elements of uncertainty in the model bring to the definition of the next kind of state automaton.
 \paragraph{Stochastic Timed Automaton}
-It’s a model through which Discrete Event Systems can be represented, when the elements of uncertainty must be taken into account, and it’s identified as a $6$-tuple $(\mathcal{E},\mathcal{X},\Gamma,\transp,p_0,F)$ where:
+It’s a model through which Discrete Event Systems can be represented, when the elements of uncertainty must be taken into account, and it’s identified as a $6$-tuple $(\mathcal{E},\mathcal{X},\Gamma,\transp,\transp_0,F)$ where:
 \begin{itemize}
 \item $(\mathcal{E},\mathcal{X},\Gamma)$ are the same as for the timed automaton.
 \item $\transp$ is a set of transition probabilities from a state to another. It substitutes $f$ and it’s defined as follows:
@@ -424,7 +424,7 @@ $$
 \newpage
 \paragraph{Stochastic Timed Automaton With Poisson Clock Structure}
 It's a stochastic timed automaton 
-$(\mathcal{E},\mathcal{X},\Gamma,\transp,\transp_0,F)$ where $F = \{F_e : e \in \mathcal{E}\}$, \textbf{with \textit{i.i.d.} events' lifetimes} and:
+$(\mathcal{E},\mathcal{X},\Gamma,\transp,\transp_0,F)$ where $F = \{F_e : e \in \mathcal{E}\}$, with \textit{i.i.d.} events' lifetimes and:
 $$
 F_e(t)=1-e^{-\lambda_e t}, \quad t\geq 0, \quad \lambda_e>0
 $$
@@ -460,7 +460,7 @@ e'\neq e
 =\frac{\lambda_e}{\lambda_e+(\Lambda(x)-\lambda_e)}=\frac{\lambda_e}{\Lambda(x)}
 \end{equation}
 \noindent
-Where $(\Lambda(x)-\lambda_e)$ is the rate of $Y_{e',k}$ since $\Lambda(x)$ is the sum of the rates of all the feasible events $e \neq e'$:
+Where $(\Lambda(x)-\lambda_e)$ is the rate of $Y_{e',k}$ since $\Lambda(x)$ is the sum of the rates of all the feasible events:
 $$
 \Lambda(x) = \mathlarger{\sum_{e \in \Gamma(x)}\lambda_e}
 $$
@@ -603,7 +603,7 @@ $$
 $$
 Likewise, it's possible to obtain the same result for the events: 
 $$
-P\left(E_{k+1}=j\right)=\sum_{\mathlarger{i\in\mathcal{X}}}{P\left(E_{k+1}=j \mid X_k=i\right)P\left(X_k=i\right)}
+P\left(E_{k+1}=j\right)=\sum_{i\in\mathcal{X}}{P\left(E_{k+1}=j \mid X_k=i\right)P\left(X_k=i\right)}
 $$
 
 $$
