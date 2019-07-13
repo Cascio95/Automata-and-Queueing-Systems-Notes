@@ -20,10 +20,8 @@
 \usepackage{float}
 \usepackage[left=2.5cm,right=2.5cm,bottom=2cm,top=2cm,includeheadfoot]{geometry}
 \usepackage[shortlabels]{enumitem}
-% Da scommentare per abilitare un ambiente Large
-% migliore rispetto al Large normale
 \usepackage{environ}
-\NewEnviron{MatrixAdjust*}{%
+\NewEnviron{MatrixAdjust*}{
 \begin{equation*}
 \scalebox{0.975}{$\BODY$}
 \end{equation*}
@@ -250,7 +248,7 @@ This set of probabilities generalises the deterministic case, that is $x' = f(x,
 \begin{equation*}
 \transp_0(x) = P(X_0 = x), \quad \forall x\in \mathcal{X}
 \end{equation*}
-\item $F$ is the stochastic clock structure and $F_e$ are the cumulative distribution functions of the lifetimes of all the events in $\mathcal{E}$:
+\item $F$ is the stochastic clock structure and $F_e$ is the cumulative distribution function of the lifetimes of the generic event $e\in\mathcal{E}$:
 \begin{equation*}
 F = \{F_e : e \in \mathcal{E}\}, \quad F_e(t) = P(V_{e,i} \leq t)
 \end{equation*}
@@ -460,7 +458,7 @@ e'\neq e
 =\frac{\lambda_e}{\lambda_e+(\Lambda(x)-\lambda_e)}=\frac{\lambda_e}{\Lambda(x)}
 \end{equation}
 \noindent
-Where $(\Lambda(x)-\lambda_e)$ is the rate of $Y_{e',k}$ since $\Lambda(x)$ is the sum of the rates of all the feasible events:
+Where $(\Lambda(x)-\lambda_e)$ is the rate of $Y_{e',k}$ since $\Lambda(x)$ is the sum of the rates of all the feasible events $e \neq e'$:
 $$
 \Lambda(x) = \mathlarger{\sum_{e \in \Gamma(x)}\lambda_e}
 $$
@@ -573,29 +571,18 @@ P(X_{k+1} = j) =
 \end{equation*}
 $P(X_{k+1} = j)$ will be the $j$-th entry of the vector $\Pi_X(k+1)$ and of the product $\Pi_X(k) \cdot P_X$. 
 So assuming that $\Pi_X(0)$ is known:
-%$$ %%%%%%uncomment%%%%%%
-%\Pi_X(0) \quad = \quad
-%\left[
-%\begin{matrix}
-%\transp_0(1),&
-%\transp_0(2),&
-%\dots,&
-%\transp_0(n)
-%\end{matrix}
-%\right]
-%$$
 $$
 \begin{matrix} 
-\Pi_X(0)&=&\left[ %%%%%
-\begin{matrix} %%%%%%
-\transp_0(1),& %%%%%%
-\transp_0(2),& %%%%%%
-\dots,& %%%%%%
-\transp_0(n)%%%%%
-\end{matrix} %%%%%
-\right]\\\\%%%%%
-\Pi_X(1)&=&\Pi_X(0) \cdot P_X\\\\%%%%%
-\Pi_X(2)&=&\Pi_X(1) \cdot P_X&=&\Pi_X(0) \cdot P_X^2\\\\%%%%%%
+\Pi_X(0)&=&\left[ 
+\begin{matrix}
+\transp_0(1),& 
+\transp_0(2),& 
+\dots,& 
+\transp_0(n)
+\end{matrix} 
+\right]\\\\
+\Pi_X(1)&=&\Pi_X(0) \cdot P_X\\\\
+\Pi_X(2)&=&\Pi_X(1) \cdot P_X&=&\Pi_X(0) \cdot P_X^2\\\\
 \Pi_X(3)&=&\Pi_X(2) \cdot P_X&=&\Pi_X(0) \cdot P_X^3\\
 &&\vdots\\
 \Pi_X(k+1)&=&\Pi_X(k) \cdot P_X&=&\Pi_X(0)P_X^{k+1}
@@ -1101,7 +1088,7 @@ $$
 \Pi(0)\cdot H(t)\hspace{5pt}=\hspace{5pt}
 \Pi(0)\cdot e^{Qt}
 $$
-The probabilities in time can be divided in two categories: `Transient State' and `Steady State':
+The state probabilities can be divided, depending on the behaviour (with respect to time) of the system, in two categories: ‘Transient State’ and ‘Steady State’ probabilities:
 \begin{itemize}
 \item \textbf{Transient State}: In order to analyse the behaviour of the system's state probabilities during the transient state, the derivative of $\Pi(t)$ must be computed:
 
